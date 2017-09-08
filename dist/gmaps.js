@@ -2,7 +2,7 @@
 * @wearejust/gmaps 
 * Google Maps wrapper 
 * 
-* @version 1.0.0 
+* @version 1.1.0 
 * @author Emre Koc <emre.koc@wearejust.com> 
 */
 'use strict';
@@ -11,45 +11,102 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var $body = $(document.body);
 var $window = $(window);
+var options = void 0,
+    mapOptions = void 0,
+    queue = [];
 
-module.exports = function (element, options) {
-    if (!element.data('GMaps')) {
-        element.data('GMaps', new GMaps(element, options));
-    }
-};
+module.exports.init = function (opts, mapOpts) {
+    if (!options) {
+        options = $.extend({
+            apiKey: 'KEY',
+            fitZoom: -1,
+            fitZoomMin: 0,
+            fitZoomMax: 10
+        }, opts || {});
 
-$.fn.gmaps = function (options) {
-    return $(this).each(function (index, item) {
-        module.exports($(item), options);
-    });
-};
-
-var GMaps = function () {
-    function GMaps(element, options) {
-        _classCallCheck(this, GMaps);
-
-        this.element = element;
-        this.options = $.extend({
+        mapOptions = $.extend({
             mapTypeControl: false,
             streetViewControl: false,
             zoom: 17
-        }, options || {});
+        }, mapOpts || {});
 
-        if (this.options.center) {
-            this.location = this.options.center;
+        if (!window.google) {
+            window.gmaps_load_callback = parse;
+            $.getScript('https://maps.googleapis.com/maps/api/js?v=3&callback=gmaps_load_callback&key=' + options.apiKey);
         } else {
-            var lat = this.element.attr('data-lat') || this.element.attr('data-latitude');
-            var lng = this.element.attr('data-lng') || this.element.attr('data-longitude');
-            this.location = new google.maps.LatLng(lat, lng);
+            parse();
+        }
+    } else if (window.google) {
+        parse();
+    }
+};
+
+$.fn.gmaps = function (options, mapOptions) {
+    var items = $(this).each(function (index, item) {
+        item = $(item);
+        if (!item.data('GMaps')) {
+            queue.push(new GMaps(item, options, mapOptions));
+        }
+    });
+
+    module.exports.init(options, mapOptions);
+
+    return items;
+};
+
+function parse() {
+    while (queue.length) {
+        queue.pop().init();
+    }
+}
+
+var GMaps = function () {
+    function GMaps(element, options, mapOptions) {
+        _classCallCheck(this, GMaps);
+
+        this.element = element;
+        this.element.data('GMaps', this);
+        this.options = options;
+        this.mapOptions = mapOptions;
+    }
+
+    GMaps.prototype.init = function init() {
+        this.options = $.extend(options, this.options || {});
+        this.mapOptions = $.extend(mapOptions, this.mapOptions || {});
+
+        if (this.element.is('ul')) {
+            this.items = this.element.find('li');
+
+            var el = '';
+            $.each(this.element[0].attributes, function (index, item) {
+                el += item.name + '="' + item.value + '" ';
+            });
+            el = $('<div ' + el + '></div>');
+            this.element.replaceWith(el);
+            this.element = el;
         }
 
-        this.map = new google.maps.Map(this.element[0], this.options);
+        this.map = new google.maps.Map(this.element[0], this.mapOptions);
 
-        this.marker = new google.maps.Marker({
-            position: this.location,
-            map: this.map,
-            icon: this.options.markerIcon
-        });
+        this.markers = [];
+        this.bounds = new google.maps.LatLngBounds();
+        var lat = void 0,
+            lng = void 0;
+        this.element.add(this.items).each(function (index, item) {
+            item = $(item);
+            lat = item.attr('data-gmaps-lat') || item.attr('data-gmaps-latitude');
+            lng = item.attr('data-gmaps-lng') || item.attr('data-gmaps-longitude');
+            if (lat && lng) {
+                item = new google.maps.Marker({
+                    position: new google.maps.LatLng(lat, lng),
+                    map: this.map,
+                    icon: this.mapOptions.markerIcon,
+                    title: item.attr('data-gmaps-title') || item.attr('title') || item.find('.gmaps-title').text()
+                });
+                this.markers.push(item);
+                this.bounds.extend(item.position);
+            }
+        }.bind(this));
 
         this.cover = $('<div class="gmaps-cover" style="position:absolute;left:0;right:0;top:0;bottom:0;z-index:99999;"></div>');
         this.element.prepend(this.cover);
@@ -58,12 +115,31 @@ var GMaps = function () {
         this.coverShow = this.coverShow.bind(this);
         this.cover.on('click', this.coverHide);
 
+        google.maps.event.addListener(this.map, 'zoom_changed', this.zoom.bind(this));
         $window.on('resize', this.resize.bind(this));
         this.resize();
-    }
+    };
 
     GMaps.prototype.resize = function resize() {
-        this.map.setCenter(this.location);
+        this.resizeZoom = true;
+        this.map.fitBounds(this.bounds);
+    };
+
+    GMaps.prototype.zoom = function zoom() {
+        if (this.resizeZoom) {
+            this.resizeZoom = false;
+            var z = this.map.getZoom();
+            var n = z + this.options.fitZoom;
+            if (this.options.fitZoomMin) {
+                n = Math.max(this.options.fitZoomMin, n);
+            }
+            if (this.options.fitZoomMax) {
+                n = Math.min(this.options.fitZoomMax, n);
+            }
+            if (n != z) {
+                this.map.setZoom(n);
+            }
+        }
     };
 
     GMaps.prototype.coverHide = function coverHide() {
