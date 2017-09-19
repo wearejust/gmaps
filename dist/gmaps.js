@@ -2,7 +2,7 @@
 * @wearejust/gmaps 
 * Google Maps wrapper 
 * 
-* @version 1.1.2 
+* @version 1.1.3 
 * @author Emre Koc <emre.koc@wearejust.com> 
 */
 'use strict';
@@ -130,7 +130,7 @@ var GMaps = function () {
 * @wearejust/gmaps 
 * Google Maps wrapper 
 * 
-* @version 1.1.2 
+* @version 1.1.3 
 * @author Emre Koc <emre.koc@wearejust.com> 
 */
 'use strict';
@@ -159,15 +159,36 @@ var Item = function () {
             title: this.title
         });
 
-        var content = this.element.html();
-        if (content && $.trim(content).length) {
-            this.infowindow = new google.maps.InfoWindow({
-                content: content
-            });
+        this.link = this.element.attr('data-gmaps-link');
+        if (this.link) {
+            this.linkTarget = this.element.attr('data-gmaps-link-target');
+            if (this.linkTarget == 'blank') this.linkTarget = '_blank';
+            $window.on('keydown keyup', this.keys.bind(this));
 
-            this.marker.addListener('click', this.show.bind(this));
+            this.marker.addListener('click', this.open.bind(this));
+        } else {
+            var content = this.element.html();
+            if (content && $.trim(content).length) {
+                this.infowindow = new google.maps.InfoWindow({
+                    content: content
+                });
+
+                this.marker.addListener('click', this.show.bind(this));
+            }
         }
     }
+
+    Item.prototype.keys = function keys(e) {
+        this.metaKey = e.type == 'keydown' && (e.ctrlKey || e.metaKey);
+    };
+
+    Item.prototype.open = function open() {
+        if (this.metaKey || this.linkTarget == '_blank') {
+            window.open(this.link);
+        } else {
+            window.location = this.link;
+        }
+    };
 
     Item.prototype.show = function show() {
         this.infowindow.open(this.map, this.marker);

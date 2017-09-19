@@ -18,13 +18,36 @@ class Item {
             title: this.title
         });
 
-        let content = this.element.html();
-        if (content && $.trim(content).length) {
-            this.infowindow = new google.maps.InfoWindow({
-                content: content
-            });
 
-            this.marker.addListener('click', this.show.bind(this));
+        this.link = this.element.attr('data-gmaps-link');
+        if (this.link) {
+            this.linkTarget = this.element.attr('data-gmaps-link-target');
+            if (this.linkTarget == 'blank') this.linkTarget = '_blank';
+            $window.on('keydown keyup', this.keys.bind(this));
+
+            this.marker.addListener('click', this.open.bind(this));
+
+        } else {
+            let content = this.element.html();
+            if (content && $.trim(content).length) {
+                this.infowindow = new google.maps.InfoWindow({
+                    content: content
+                });
+
+                this.marker.addListener('click', this.show.bind(this));
+            }
+        }
+    }
+
+    keys(e) {
+        this.metaKey = e.type == 'keydown' && (e.ctrlKey || e.metaKey);
+    }
+    
+    open() {
+        if (this.metaKey || this.linkTarget == '_blank') {
+            window.open(this.link);
+        } else {
+            window.location = this.link;
         }
     }
 
