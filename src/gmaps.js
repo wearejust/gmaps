@@ -1,4 +1,3 @@
-const $body = $(document.body);
 const $window = $(window);
 let options, mapOptions, queue = [];
 
@@ -93,13 +92,6 @@ class GMaps {
             }
         }.bind(this));
 
-        this.cover = $('<div class="gmaps-cover" style="position:absolute;left:0;right:0;top:0;bottom:0;z-index:99999;"></div>');
-        this.element.prepend(this.cover);
-        this.coverHide = this.coverHide.bind(this);
-        this.coverHidden = this.coverHidden.bind(this);
-        this.coverShow = this.coverShow.bind(this);
-        this.cover.on('click', this.coverHide);
-
         google.maps.event.addListener(this.map, 'zoom_changed', this.zoom.bind(this));
         $window.on('resize', this.resize.bind(this));
         this.resize();
@@ -124,24 +116,6 @@ class GMaps {
             if (n != z) {
                 this.map.setZoom(n);
             }
-        }
-    }
-
-    coverHide() {
-        this.cover.css('display', 'none');
-        setTimeout(this.coverHidden, 500);
-    }
-
-    coverHidden() {
-        $body.on('click', this.coverShow);
-        $window.on('scroll', this.coverShow);
-    }
-
-    coverShow(e) {
-        if (e && (e.type != 'click' || !$(e.target).closest(this.element).length)) {
-            $body.off('click', this.coverShow);
-            $window.off('scroll', this.coverShow);
-            this.cover.css('display', '');
         }
     }
 }

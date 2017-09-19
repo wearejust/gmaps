@@ -2,14 +2,13 @@
 * @wearejust/gmaps 
 * Google Maps wrapper 
 * 
-* @version 1.1.0 
+* @version 1.1.1 
 * @author Emre Koc <emre.koc@wearejust.com> 
 */
 'use strict';
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var $body = $(document.body);
 var $window = $(window);
 var options = void 0,
     mapOptions = void 0,
@@ -108,13 +107,6 @@ var GMaps = function () {
             }
         }.bind(this));
 
-        this.cover = $('<div class="gmaps-cover" style="position:absolute;left:0;right:0;top:0;bottom:0;z-index:99999;"></div>');
-        this.element.prepend(this.cover);
-        this.coverHide = this.coverHide.bind(this);
-        this.coverHidden = this.coverHidden.bind(this);
-        this.coverShow = this.coverShow.bind(this);
-        this.cover.on('click', this.coverHide);
-
         google.maps.event.addListener(this.map, 'zoom_changed', this.zoom.bind(this));
         $window.on('resize', this.resize.bind(this));
         this.resize();
@@ -139,24 +131,6 @@ var GMaps = function () {
             if (n != z) {
                 this.map.setZoom(n);
             }
-        }
-    };
-
-    GMaps.prototype.coverHide = function coverHide() {
-        this.cover.css('display', 'none');
-        setTimeout(this.coverHidden, 500);
-    };
-
-    GMaps.prototype.coverHidden = function coverHidden() {
-        $body.on('click', this.coverShow);
-        $window.on('scroll', this.coverShow);
-    };
-
-    GMaps.prototype.coverShow = function coverShow(e) {
-        if (e && (e.type != 'click' || !$(e.target).closest(this.element).length)) {
-            $body.off('click', this.coverShow);
-            $window.off('scroll', this.coverShow);
-            this.cover.css('display', '');
         }
     };
 
