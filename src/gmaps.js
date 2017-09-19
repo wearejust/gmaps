@@ -75,18 +75,9 @@ class GMaps {
 
         this.markers = [];
         this.bounds = new google.maps.LatLngBounds();
-        let lat, lng;
         this.element.add(this.items).each(function(index, item) {
-            item = $(item);
-            lat = item.attr('data-gmaps-lat') || item.attr('data-gmaps-latitude');
-            lng = item.attr('data-gmaps-lng') || item.attr('data-gmaps-longitude');
-            if (lat && lng) {
-                item = new google.maps.Marker({
-                    position: new google.maps.LatLng(lat, lng),
-                    map: this.map,
-                    icon: this.mapOptions.markerIcon,
-                    title: item.attr('data-gmaps-title') || item.attr('title') || item.find('.gmaps-title').text()
-                });
+            item = new Item($(item), this.map, this.mapOptions);
+            if (item.position) {
                 this.markers.push(item);
                 this.bounds.extend(item.position);
             }

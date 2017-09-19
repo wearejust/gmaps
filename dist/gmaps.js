@@ -2,7 +2,7 @@
 * @wearejust/gmaps 
 * Google Maps wrapper 
 * 
-* @version 1.1.1 
+* @version 1.1.2 
 * @author Emre Koc <emre.koc@wearejust.com> 
 */
 'use strict';
@@ -89,19 +89,9 @@ var GMaps = function () {
 
         this.markers = [];
         this.bounds = new google.maps.LatLngBounds();
-        var lat = void 0,
-            lng = void 0;
         this.element.add(this.items).each(function (index, item) {
-            item = $(item);
-            lat = item.attr('data-gmaps-lat') || item.attr('data-gmaps-latitude');
-            lng = item.attr('data-gmaps-lng') || item.attr('data-gmaps-longitude');
-            if (lat && lng) {
-                item = new google.maps.Marker({
-                    position: new google.maps.LatLng(lat, lng),
-                    map: this.map,
-                    icon: this.mapOptions.markerIcon,
-                    title: item.attr('data-gmaps-title') || item.attr('title') || item.find('.gmaps-title').text()
-                });
+            item = new Item($(item), this.map, this.mapOptions);
+            if (item.position) {
                 this.markers.push(item);
                 this.bounds.extend(item.position);
             }
@@ -135,4 +125,53 @@ var GMaps = function () {
     };
 
     return GMaps;
+}();
+/** 
+* @wearejust/gmaps 
+* Google Maps wrapper 
+* 
+* @version 1.1.2 
+* @author Emre Koc <emre.koc@wearejust.com> 
+*/
+'use strict';
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Item = function () {
+    function Item(element, map, mapOptions) {
+        _classCallCheck(this, Item);
+
+        this.element = element;
+        this.map = map;
+        this.mapOptions = mapOptions;
+
+        var lat = this.element.attr('data-gmaps-lat') || this.element.attr('data-gmaps-latitude');
+        var lng = this.element.attr('data-gmaps-lng') || this.element.attr('data-gmaps-longitude');
+        if (!lat || !lng) return;
+
+        this.title = this.element.attr('data-gmaps-title') || this.element.attr('title') || this.element.find('.gmaps-title').text();
+        this.position = new google.maps.LatLng(lat, lng);
+
+        this.marker = new google.maps.Marker({
+            position: this.position,
+            map: this.map,
+            icon: this.mapOptions.markerIcon,
+            title: this.title
+        });
+
+        var content = this.element.html();
+        if (content && $.trim(content).length) {
+            this.infowindow = new google.maps.InfoWindow({
+                content: content
+            });
+
+            this.marker.addListener('click', this.show.bind(this));
+        }
+    }
+
+    Item.prototype.show = function show() {
+        this.infowindow.open(this.map, this.marker);
+    };
+
+    return Item;
 }();
