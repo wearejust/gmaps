@@ -2,7 +2,7 @@
 * @wearejust/gmaps 
 * Google Maps wrapper 
 * 
-* @version 1.1.3 
+* @version 1.1.4 
 * @author Emre Koc <emre.koc@wearejust.com> 
 */
 'use strict';
@@ -90,12 +90,33 @@ var GMaps = function () {
         this.markers = [];
         this.bounds = new google.maps.LatLngBounds();
         this.element.add(this.items).each(function (index, item) {
-            item = new Item($(item), this.map, this.mapOptions);
+            item = new Item($(item), this.element, this.map, this.mapOptions);
             if (item.position) {
+                item.onOpen = this.markerOpen.bind(this);
+                item.onClose = this.markerClose.bind(this);
                 this.markers.push(item);
                 this.bounds.extend(item.position);
             }
         }.bind(this));
+
+        this.markers = this.markers.sort(function (a, b) {
+            var aVal = a.position.lat();
+            var bVal = b.position.lat();
+            if (aVal == bVal) {
+                aVal = a.position.lng();
+                bVal = b.position.lng();
+            }
+            if (aVal > bVal) return -1;
+            if (aVal < bVal) return 1;
+            return 0;
+        });
+
+        this.tabIndex = -1;
+        this.tab = this.tab.bind(this);
+        this.element.attr('tabindex', '0');
+        this.element.on('focus', this.focus.bind(this));
+        this.element.on('blur', this.blur.bind(this));
+        $window.on('keydown keyup', this.keys.bind(this));
 
         google.maps.event.addListener(this.map, 'zoom_changed', this.zoom.bind(this));
         $window.on('resize', this.resize.bind(this));
@@ -124,13 +145,75 @@ var GMaps = function () {
         }
     };
 
+    GMaps.prototype.keys = function keys(e) {
+        this.shiftKey = e.type == 'keydown' && e.shiftKey;
+        if (e.type == 'keydown' && this.tabIndex != -1) {
+            if (e.keyCode == 13 || e.keyCode == 32) {
+                if (!this.markerOpened || this.markerOpened != this.markers[this.tabIndex]) {
+                    this.markers[this.tabIndex].open();
+                }
+            } else if (e.keyCode == 27 && this.markerOpened) {
+                this.markerOpened.close();
+            }
+        }
+    };
+
+    GMaps.prototype.focus = function focus(e) {
+        $window.on('keydown', this.tab);
+        if (this.tabIndex == -1) this.tabIndex = e.shiftKey || this.shiftKey ? this.markers.length - 1 : 0;
+        this.tab();
+    };
+
+    GMaps.prototype.blur = function blur() {
+        if (!this.markerOpened) {
+            $window.off('keydown', this.tab);
+            this.tabIndex = -1;
+            var i = void 0;
+            for (i = 0; i < this.markers.length; i++) {
+                this.markers[i].toggle(true);
+            }
+        }
+    };
+
+    GMaps.prototype.tab = function tab(e) {
+        if (!this.markerOpened && (!e || e.keyCode == 9)) {
+            if (e) {
+                e.preventDefault();
+                this.tabIndex += e.shiftKey ? -1 : 1;
+            }
+
+            if (this.tabIndex >= 0 && this.tabIndex < this.markers.length) {
+                var i = void 0;
+                for (i = 0; i < this.markers.length; i++) {
+                    this.markers[i].toggle(i == this.tabIndex);
+                }
+            } else {
+                this.blur();
+            }
+        }
+    };
+
+    GMaps.prototype.markerOpen = function markerOpen(marker) {
+        if (this.markerOpened) {
+            this.markerOpened.close();
+        }
+        this.markerOpened = marker;
+    };
+
+    GMaps.prototype.markerClose = function markerClose() {
+        this.markerOpened = null;
+        if (this.tabIndex != -1) {
+            this.element.focus();
+        }
+    };
+
     return GMaps;
 }();
 /** 
 * @wearejust/gmaps 
 * Google Maps wrapper 
 * 
-* @version 1.1.3 
+* @version 1.1.4 
 * @author Emre Koc <emre.koc@wearejust.com> 
 */
 'use strict';
@@ -138,10 +221,11 @@ var GMaps = function () {
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Item = function () {
-    function Item(element, map, mapOptions) {
+    function Item(element, container, map, mapOptions) {
         _classCallCheck(this, Item);
 
         this.element = element;
+        this.container = container;
         this.map = map;
         this.mapOptions = mapOptions;
 
@@ -173,7 +257,7 @@ var Item = function () {
                     content: content
                 });
 
-                this.marker.addListener('click', this.show.bind(this));
+                this.marker.addListener('click', this.open.bind(this));
             }
         }
     }
@@ -183,15 +267,52 @@ var Item = function () {
     };
 
     Item.prototype.open = function open() {
-        if (this.metaKey || this.linkTarget == '_blank') {
+        if (this.infowindow) {
+            if (!this.opened) {
+                this.opened = true;
+                this.infowindow.open(this.map, this.marker);
+                this.onOpen(this);
+                setTimeout(this.infowindowOpened.bind(this), 100);
+            }
+        } else if (this.metaKey || this.linkTarget == '_blank') {
             window.open(this.link);
         } else {
             window.location = this.link;
         }
     };
 
-    Item.prototype.show = function show() {
-        this.infowindow.open(this.map, this.marker);
+    Item.prototype.infowindowOpened = function infowindowOpened() {
+        var content = this.container.find('.gm-style-iw');
+        content.focus();
+        content.next().attr('tabindex', '0').on('keyup', this.infowindowClose.bind(this));
+    };
+
+    Item.prototype.infowindowClose = function infowindowClose(e) {
+        if (e.keyCode == 13 || e.keyCode == 32) {
+            this.close();
+        }
+    };
+
+    Item.prototype.close = function close() {
+        if (this.opened) {
+            this.opened = false;
+            if (this.infowindow) {
+                this.infowindow.close();
+            }
+
+            this.onClose(this);
+        }
+    };
+
+    Item.prototype.toggle = function toggle(highlight) {
+        this.marker.setOptions({
+            opacity: highlight ? 1 : 0.5,
+            zIndex: highlight ? 1 : 0
+        });
+
+        if (!highlight) {
+            this.close();
+        }
     };
 
     return Item;

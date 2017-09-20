@@ -1,6 +1,7 @@
 class Item {
-    constructor(element, map, mapOptions) {
+    constructor(element, container, map, mapOptions) {
         this.element = element;
+        this.container = container;
         this.map = map;
         this.mapOptions = mapOptions;
 
@@ -18,7 +19,6 @@ class Item {
             title: this.title
         });
 
-
         this.link = this.element.attr('data-gmaps-link');
         if (this.link) {
             this.linkTarget = this.element.attr('data-gmaps-link-target');
@@ -34,7 +34,7 @@ class Item {
                     content: content
                 });
 
-                this.marker.addListener('click', this.show.bind(this));
+                this.marker.addListener('click', this.open.bind(this));
             }
         }
     }
@@ -44,15 +44,53 @@ class Item {
     }
     
     open() {
-        if (this.metaKey || this.linkTarget == '_blank') {
+        if (this.infowindow) {
+            if (!this.opened) {
+                this.opened = true;
+                this.infowindow.open(this.map, this.marker);
+                this.onOpen(this);
+                setTimeout(this.infowindowOpened.bind(this), 100);
+            }
+
+        } else if (this.metaKey || this.linkTarget == '_blank') {
             window.open(this.link);
         } else {
             window.location = this.link;
         }
     }
 
-    show() {
-        this.infowindow.open(this.map, this.marker);
+    infowindowOpened() {
+        let content = this.container.find('.gm-style-iw');
+        content.focus();
+        content.next().attr('tabindex', '0').on('keyup', this.infowindowClose.bind(this));
+    }
+
+    infowindowClose(e) {
+        if (e.keyCode == 13 || e.keyCode == 32) {
+            this.close();
+        }
+    }
+
+    close() {
+        if (this.opened) {
+            this.opened = false;
+            if (this.infowindow) {
+                this.infowindow.close();
+            }
+
+            this.onClose(this);
+        }
+    }
+
+    toggle(highlight) {
+        this.marker.setOptions({
+            opacity: highlight ? 1 : 0.5,
+            zIndex: highlight ? 1 : 0
+        });
+
+        if (!highlight) {
+            this.close();
+        }
     }
 }
 
