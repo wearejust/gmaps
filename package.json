@@ -1,6 +1,6 @@
 {
     "name": "@wearejust/gmaps",
-    "version": "1.2.0",
+    "version": "1.2.1",
     "description": "Google Maps wrapper",
     "main": "dist/gmaps.js",
     "license": "MIT",

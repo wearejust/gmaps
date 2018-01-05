@@ -2,7 +2,7 @@
 * @wearejust/gmaps 
 * Google Maps wrapper 
 * 
-* @version 1.2.0 
+* @version 1.2.1 
 * @author Emre Koc <emre.koc@wearejust.com> 
 */
 'use strict';
@@ -73,20 +73,24 @@ var GMaps = function () {
     GMaps.prototype.init = function init() {
         this.options = $.extend(options, this.options || {});
         this.mapOptions = $.extend(mapOptions, this.mapOptions || {});
+        var container = this.element.attr('data-gmaps-container');
 
         if (this.element.is('ul')) {
             this.items = this.element.find('li');
 
-            var el = '';
-            $.each(this.element[0].attributes, function (index, item) {
-                el += item.name + '="' + item.value + '" ';
-            });
-            el = $('<div ' + el + '></div>');
-            this.element.replaceWith(el);
-            this.element = el;
+            if (!container) {
+                var el = '';
+                $.each(this.element[0].attributes, function (index, item) {
+                    el += item.name + '="' + item.value + '" ';
+                });
+                el = $('<div ' + el + '></div>');
+                this.element.replaceWith(el);
+                this.element = el;
+            }
         }
 
-        this.map = new google.maps.Map(this.element[0], this.mapOptions);
+        container = $('[data-gmaps-id="' + container + '"]');
+        this.map = new google.maps.Map(container.length ? container[0] : this.element[0], this.mapOptions);
 
         this.markers = [];
         this.bounds = new google.maps.LatLngBounds();
@@ -214,7 +218,7 @@ var GMaps = function () {
 * @wearejust/gmaps 
 * Google Maps wrapper 
 * 
-* @version 1.2.0 
+* @version 1.2.1 
 * @author Emre Koc <emre.koc@wearejust.com> 
 */
 'use strict';
