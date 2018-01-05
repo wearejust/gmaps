@@ -2,13 +2,14 @@
 * @wearejust/gmaps 
 * Google Maps wrapper 
 * 
-* @version 1.1.4 
+* @version 1.2.0 
 * @author Emre Koc <emre.koc@wearejust.com> 
 */
 'use strict';
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+var $ = require('jquery');
 var $window = $(window);
 var options = void 0,
     mapOptions = void 0,
@@ -213,7 +214,7 @@ var GMaps = function () {
 * @wearejust/gmaps 
 * Google Maps wrapper 
 * 
-* @version 1.1.4 
+* @version 1.2.0 
 * @author Emre Koc <emre.koc@wearejust.com> 
 */
 'use strict';

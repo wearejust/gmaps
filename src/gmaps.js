@@ -1,3 +1,4 @@
+var $ = require('jquery');
 const $window = $(window);
 let options, mapOptions, queue = [];
 
