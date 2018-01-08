@@ -1,4 +1,4 @@
-var $ = require('jquery');
+const $ = require('jquery');
 const $window = $(window);
 let options, mapOptions, queue = [];
 
@@ -81,7 +81,7 @@ class GMaps {
         this.markers = [];
         this.bounds = new google.maps.LatLngBounds();
         this.element.add(this.items).each(function(index, item) {
-            item = new Item($(item), this.element, this.map, this.mapOptions);
+            item = new Item($(item), this.element, this.map, this.options, this.mapOptions);
             if (item.position) {
                 item.onOpen = this.markerOpen.bind(this);
                 item.onClose = this.markerClose.bind(this);

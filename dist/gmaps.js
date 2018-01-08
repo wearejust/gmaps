@@ -2,7 +2,7 @@
 * @wearejust/gmaps 
 * Google Maps wrapper 
 * 
-* @version 1.2.1 
+* @version 1.3.0 
 * @author Emre Koc <emre.koc@wearejust.com> 
 */
 'use strict';
@@ -95,7 +95,7 @@ var GMaps = function () {
         this.markers = [];
         this.bounds = new google.maps.LatLngBounds();
         this.element.add(this.items).each(function (index, item) {
-            item = new Item($(item), this.element, this.map, this.mapOptions);
+            item = new Item($(item), this.element, this.map, this.options, this.mapOptions);
             if (item.position) {
                 item.onOpen = this.markerOpen.bind(this);
                 item.onClose = this.markerClose.bind(this);
@@ -218,7 +218,7 @@ var GMaps = function () {
 * @wearejust/gmaps 
 * Google Maps wrapper 
 * 
-* @version 1.2.1 
+* @version 1.3.0 
 * @author Emre Koc <emre.koc@wearejust.com> 
 */
 'use strict';
@@ -226,27 +226,37 @@ var GMaps = function () {
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Item = function () {
-    function Item(element, container, map, mapOptions) {
+    function Item(element, container, map, options, mapOptions) {
         _classCallCheck(this, Item);
 
         this.element = element;
         this.container = container;
         this.map = map;
+        this.options = options;
         this.mapOptions = mapOptions;
 
         var lat = this.element.attr('data-gmaps-lat') || this.element.attr('data-gmaps-latitude');
         var lng = this.element.attr('data-gmaps-lng') || this.element.attr('data-gmaps-longitude');
         if (!lat || !lng) return;
-
-        this.title = this.element.attr('data-gmaps-title') || this.element.attr('title') || this.element.find('.gmaps-title').text();
         this.position = new google.maps.LatLng(lat, lng);
 
-        this.marker = new google.maps.Marker({
-            position: this.position,
+        var markerOptions = {
             map: this.map,
-            icon: this.mapOptions.markerIcon,
-            title: this.title
-        });
+            position: this.position,
+            label: this.element.attr('data-gmaps-label'),
+            title: this.element.attr('data-gmaps-title') || this.element.attr('title') || this.element.find('.gmaps-title').text()
+        };
+
+        var marker = this.options.markers ? this.options.markers[this.element.attr('data-gmaps-marker')] : null;
+        if (marker) {
+            markerOptions.icon = marker.icon;
+            if (marker.label) {
+                marker.label.text = markerOptions.label;
+                markerOptions.label = marker.label;
+            }
+        }
+
+        this.marker = new google.maps.Marker(markerOptions);
 
         this.link = this.element.attr('data-gmaps-link');
         if (this.link) {
