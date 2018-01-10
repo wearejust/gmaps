@@ -2,7 +2,7 @@
 * @wearejust/gmaps 
 * Google Maps wrapper 
 * 
-* @version 1.3.0 
+* @version 1.3.1 
 * @author Emre Koc <emre.koc@wearejust.com> 
 */
 'use strict';
@@ -95,7 +95,7 @@ var GMaps = function () {
         this.markers = [];
         this.bounds = new google.maps.LatLngBounds();
         this.element.add(this.items).each(function (index, item) {
-            item = new Item($(item), this.element, this.map, this.options, this.mapOptions);
+            item = new Item($(item), container, this.map, this.options, this.mapOptions);
             if (item.position) {
                 item.onOpen = this.markerOpen.bind(this);
                 item.onClose = this.markerClose.bind(this);
@@ -218,7 +218,7 @@ var GMaps = function () {
 * @wearejust/gmaps 
 * Google Maps wrapper 
 * 
-* @version 1.3.0 
+* @version 1.3.1 
 * @author Emre Koc <emre.koc@wearejust.com> 
 */
 'use strict';
@@ -298,6 +298,7 @@ var Item = function () {
 
     Item.prototype.infowindowOpened = function infowindowOpened() {
         var content = this.container.find('.gm-style-iw');
+        content.parent().addClass('gmaps-infowindow');
         content.focus();
         content.next().attr('tabindex', '0').on('keyup', this.infowindowClose.bind(this));
     };

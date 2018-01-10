@@ -71,6 +71,7 @@ class Item {
 
     infowindowOpened() {
         let content = this.container.find('.gm-style-iw');
+        content.parent().addClass('gmaps-infowindow');
         content.focus();
         content.next().attr('tabindex', '0').on('keyup', this.infowindowClose.bind(this));
     }
