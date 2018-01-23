@@ -44,6 +44,8 @@ class Item {
                     content: content
                 });
 
+                google.maps.event.addListener(this.infowindow, 'closeclick', this.close.bind(this));
+
                 this.marker.addListener('click', this.open.bind(this));
             }
         }
@@ -57,9 +59,17 @@ class Item {
         if (this.infowindow) {
             if (!this.opened) {
                 this.opened = true;
+                this.marker.setVisible(false);
+
                 this.infowindow.open(this.map, this.marker);
                 this.onOpen(this);
-                setTimeout(this.infowindowOpened.bind(this), 100);
+
+                let iw = this.container.find('.gm-style-iw');
+                iw.parent().addClass('gmaps-infowindow');
+                iw.prev().addClass('gmaps-infowindow-bg');
+                iw.next().addClass('gmaps-infowindow-close').attr('tabindex', '0').on('keyup', this.infowindowClose.bind(this));
+                iw.children(':first-child').addClass('gmaps-infowindow-content');
+                iw.focus();
             }
 
         } else if (this.metaKey || this.linkTarget == '_blank') {
@@ -67,13 +77,6 @@ class Item {
         } else {
             window.location = this.link;
         }
-    }
-
-    infowindowOpened() {
-        let content = this.container.find('.gm-style-iw');
-        content.parent().addClass('gmaps-infowindow');
-        content.focus();
-        content.next().attr('tabindex', '0').on('keyup', this.infowindowClose.bind(this));
     }
 
     infowindowClose(e) {
@@ -85,6 +88,8 @@ class Item {
     close() {
         if (this.opened) {
             this.opened = false;
+            this.marker.setVisible(true);
+
             if (this.infowindow) {
                 this.infowindow.close();
             }

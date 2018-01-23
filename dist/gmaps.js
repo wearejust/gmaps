@@ -2,7 +2,7 @@
 * @wearejust/gmaps 
 * Google Maps wrapper 
 * 
-* @version 1.3.1 
+* @version 1.4.0 
 * @author Emre Koc <emre.koc@wearejust.com> 
 */
 'use strict';
@@ -218,7 +218,7 @@ var GMaps = function () {
 * @wearejust/gmaps 
 * Google Maps wrapper 
 * 
-* @version 1.3.1 
+* @version 1.4.0 
 * @author Emre Koc <emre.koc@wearejust.com> 
 */
 'use strict';
@@ -272,6 +272,8 @@ var Item = function () {
                     content: content
                 });
 
+                google.maps.event.addListener(this.infowindow, 'closeclick', this.close.bind(this));
+
                 this.marker.addListener('click', this.open.bind(this));
             }
         }
@@ -285,22 +287,23 @@ var Item = function () {
         if (this.infowindow) {
             if (!this.opened) {
                 this.opened = true;
+                this.marker.setVisible(false);
+
                 this.infowindow.open(this.map, this.marker);
                 this.onOpen(this);
-                setTimeout(this.infowindowOpened.bind(this), 100);
+
+                var iw = this.container.find('.gm-style-iw');
+                iw.parent().addClass('gmaps-infowindow');
+                iw.prev().addClass('gmaps-infowindow-bg');
+                iw.next().addClass('gmaps-infowindow-close').attr('tabindex', '0').on('keyup', this.infowindowClose.bind(this));
+                iw.children(':first-child').addClass('gmaps-infowindow-content');
+                iw.focus();
             }
         } else if (this.metaKey || this.linkTarget == '_blank') {
             window.open(this.link);
         } else {
             window.location = this.link;
         }
-    };
-
-    Item.prototype.infowindowOpened = function infowindowOpened() {
-        var content = this.container.find('.gm-style-iw');
-        content.parent().addClass('gmaps-infowindow');
-        content.focus();
-        content.next().attr('tabindex', '0').on('keyup', this.infowindowClose.bind(this));
     };
 
     Item.prototype.infowindowClose = function infowindowClose(e) {
@@ -312,6 +315,8 @@ var Item = function () {
     Item.prototype.close = function close() {
         if (this.opened) {
             this.opened = false;
+            this.marker.setVisible(true);
+
             if (this.infowindow) {
                 this.infowindow.close();
             }
