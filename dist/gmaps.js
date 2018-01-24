@@ -92,17 +92,35 @@ var GMaps = function () {
         container = $('[data-gmaps-id="' + container + '"]');
         this.map = new google.maps.Map(container.length ? container[0] : this.element[0], this.mapOptions);
 
+        var key = void 0,
+            positions = {};
         this.markers = [];
         this.bounds = new google.maps.LatLngBounds();
         this.element.add(this.items).each(function (index, item) {
-            item = new Item($(item), container, this.map, this.options, this.mapOptions);
+            item = new Item(index, $(item), container, this.map, this.options, this.mapOptions);
             if (item.position) {
                 item.onOpen = this.markerOpen.bind(this);
                 item.onClose = this.markerClose.bind(this);
                 this.markers.push(item);
                 this.bounds.extend(item.position);
+
+                key = 'lat' + item.position.lat() + 'lng' + item.position.lng();
+                if (!positions[key]) positions[key] = [];
+                positions[key].push(item);
             }
         }.bind(this));
+
+        var i = void 0,
+            p = void 0,
+            position = void 0;
+        for (p in positions) {
+            position = positions[p];
+            if (position.length > 1) {
+                for (i = 0; i < position.length; i++) {
+                    position[i].offset(i / position.length);
+                }
+            }
+        }
 
         this.markers = this.markers.sort(function (a, b) {
             var aVal = a.position.lat();
@@ -226,9 +244,10 @@ var GMaps = function () {
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Item = function () {
-    function Item(element, container, map, options, mapOptions) {
+    function Item(index, element, container, map, options, mapOptions) {
         _classCallCheck(this, Item);
 
+        this.index = index;
         this.element = element;
         this.container = container;
         this.map = map;
@@ -242,6 +261,7 @@ var Item = function () {
 
         var markerOptions = {
             map: this.map,
+            zIndex: this.index,
             position: this.position,
             label: this.element.attr('data-gmaps-label'),
             title: this.element.attr('data-gmaps-title') || this.element.attr('title') || this.element.find('.gmaps-title').text()
@@ -275,9 +295,23 @@ var Item = function () {
                 google.maps.event.addListener(this.infowindow, 'closeclick', this.close.bind(this));
 
                 this.marker.addListener('click', this.open.bind(this));
+
+                this.marker.addListener('mouseover', function () {
+                    this.marker.setOptions({ zIndex: 9999999 });
+                }.bind(this));
+                this.marker.addListener('mouseout', function () {
+                    this.marker.setOptions({ zIndex: this.index });
+                }.bind(this));
             }
         }
     }
+
+    Item.prototype.offset = function offset(n) {
+        var lat = this.position.lat() + Math.sin(n * Math.PI * 2) * 0.00006;
+        var lng = this.position.lng() + Math.cos(n * Math.PI * 2) * 0.0001;
+        this.position = new google.maps.LatLng(lat, lng);
+        this.marker.setPosition(this.position);
+    };
 
     Item.prototype.keys = function keys(e) {
         this.metaKey = e.type == 'keydown' && (e.ctrlKey || e.metaKey);

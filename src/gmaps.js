@@ -78,17 +78,33 @@ class GMaps {
         container = $(`[data-gmaps-id="${container}"]`);
         this.map = new google.maps.Map(container.length ? container[0] : this.element[0], this.mapOptions);
 
+        let key, positions = {};
         this.markers = [];
         this.bounds = new google.maps.LatLngBounds();
         this.element.add(this.items).each(function(index, item) {
-            item = new Item($(item), container, this.map, this.options, this.mapOptions);
+            item = new Item(index, $(item), container, this.map, this.options, this.mapOptions);
             if (item.position) {
                 item.onOpen = this.markerOpen.bind(this);
                 item.onClose = this.markerClose.bind(this);
                 this.markers.push(item);
                 this.bounds.extend(item.position);
+
+                key = `lat${item.position.lat()}lng${item.position.lng()}`;
+                if (!positions[key]) positions[key] = [];
+                positions[key].push(item);
+
             }
         }.bind(this));
+
+        let i, p, position;
+        for (p in positions) {
+            position = positions[p];
+            if (position.length > 1) {
+                for (i=0; i<position.length; i++) {
+                    position[i].offset(i / position.length);
+                }
+            }
+        }
 
         this.markers = this.markers.sort(function(a, b) {
             let aVal = a.position.lat();

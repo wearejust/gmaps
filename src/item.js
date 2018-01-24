@@ -1,5 +1,6 @@
 class Item {
-    constructor(element, container, map, options, mapOptions) {
+    constructor(index, element, container, map, options, mapOptions) {
+        this.index = index;
         this.element = element;
         this.container = container;
         this.map = map;
@@ -13,6 +14,7 @@ class Item {
 
         let markerOptions = {
             map: this.map,
+            zIndex: this.index,
             position: this.position,
             label: this.element.attr('data-gmaps-label'),
             title: this.element.attr('data-gmaps-title') || this.element.attr('title') || this.element.find('.gmaps-title').text()
@@ -47,8 +49,23 @@ class Item {
                 google.maps.event.addListener(this.infowindow, 'closeclick', this.close.bind(this));
 
                 this.marker.addListener('click', this.open.bind(this));
+
+                this.marker.addListener('mouseover', function() {
+                    this.marker.setOptions({ zIndex:9999999 });
+                }.bind(this));
+                this.marker.addListener('mouseout', function() {
+                    this.marker.setOptions({ zIndex:this.index });
+                }.bind(this));
+
             }
         }
+    }
+    
+    offset(n) {
+        let lat = this.position.lat() + Math.sin(n * Math.PI * 2) * 0.00006;
+        let lng = this.position.lng() + Math.cos(n * Math.PI * 2) * 0.0001;
+        this.position = new google.maps.LatLng(lat, lng);
+        this.marker.setPosition(this.position);
     }
 
     keys(e) {
