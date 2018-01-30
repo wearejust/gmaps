@@ -2,7 +2,7 @@
 * @wearejust/gmaps 
 * Google Maps wrapper 
 * 
-* @version 1.4.0 
+* @version 1.4.2 
 * @author Emre Koc <emre.koc@wearejust.com> 
 */
 'use strict';
@@ -236,7 +236,7 @@ var GMaps = function () {
 * @wearejust/gmaps 
 * Google Maps wrapper 
 * 
-* @version 1.4.0 
+* @version 1.4.2 
 * @author Emre Koc <emre.koc@wearejust.com> 
 */
 'use strict';
@@ -329,7 +329,7 @@ var Item = function () {
                 var iw = this.container.find('.gm-style-iw');
                 iw.parent().addClass('gmaps-infowindow');
                 iw.prev().addClass('gmaps-infowindow-bg');
-                iw.next().addClass('gmaps-infowindow-close').attr('tabindex', '0').on('keyup', this.infowindowClose.bind(this));
+                iw.next().addClass('gmaps-infowindow-close').attr('tabindex', '0').on('click keyup', this.infowindowClose.bind(this));
                 iw.children(':first-child').addClass('gmaps-infowindow-content');
                 iw.focus();
             }
@@ -341,7 +341,7 @@ var Item = function () {
     };
 
     Item.prototype.infowindowClose = function infowindowClose(e) {
-        if (e.keyCode == 13 || e.keyCode == 32) {
+        if (!e || e.type == 'click' || e.keyCode == 13 || e.keyCode == 32) {
             this.close();
         }
     };
