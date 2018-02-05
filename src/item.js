@@ -30,6 +30,12 @@ class Item {
         }
 
         this.marker = new google.maps.Marker(markerOptions);
+        this.marker.addListener('mouseover', function() {
+            this.marker.setOptions({ zIndex:9999999 });
+        }.bind(this));
+        this.marker.addListener('mouseout', function() {
+            this.marker.setOptions({ zIndex:this.index });
+        }.bind(this));
 
         this.link = this.element.attr('data-gmaps-link');
         if (this.link) {
@@ -39,7 +45,7 @@ class Item {
 
             this.marker.addListener('click', this.open.bind(this));
 
-        } else {
+        } else if (this.element[0] != container) {
             let content = this.element.html();
             if (content && $.trim(content).length) {
                 this.infowindow = new google.maps.InfoWindow({
@@ -49,14 +55,6 @@ class Item {
                 google.maps.event.addListener(this.infowindow, 'closeclick', this.close.bind(this));
 
                 this.marker.addListener('click', this.open.bind(this));
-
-                this.marker.addListener('mouseover', function() {
-                    this.marker.setOptions({ zIndex:9999999 });
-                }.bind(this));
-                this.marker.addListener('mouseout', function() {
-                    this.marker.setOptions({ zIndex:this.index });
-                }.bind(this));
-
             }
         }
     }

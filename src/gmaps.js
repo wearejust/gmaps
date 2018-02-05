@@ -76,7 +76,8 @@ class GMaps {
         }
 
         container = $(`[data-gmaps-id="${container}"]`);
-        this.map = new google.maps.Map(container.length ? container[0] : this.element[0], this.mapOptions);
+        container = container.length ? container[0] : this.element[0];
+        this.map = new google.maps.Map(container, this.mapOptions);
 
         let key, positions = {};
         this.markers = [];

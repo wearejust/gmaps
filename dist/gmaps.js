@@ -2,7 +2,7 @@
 * @wearejust/gmaps 
 * Google Maps wrapper 
 * 
-* @version 1.4.2 
+* @version 1.4.3 
 * @author Emre Koc <emre.koc@wearejust.com> 
 */
 'use strict';
@@ -90,7 +90,8 @@ var GMaps = function () {
         }
 
         container = $('[data-gmaps-id="' + container + '"]');
-        this.map = new google.maps.Map(container.length ? container[0] : this.element[0], this.mapOptions);
+        container = container.length ? container[0] : this.element[0];
+        this.map = new google.maps.Map(container, this.mapOptions);
 
         var key = void 0,
             positions = {};
@@ -236,7 +237,7 @@ var GMaps = function () {
 * @wearejust/gmaps 
 * Google Maps wrapper 
 * 
-* @version 1.4.2 
+* @version 1.4.3 
 * @author Emre Koc <emre.koc@wearejust.com> 
 */
 'use strict';
@@ -277,6 +278,12 @@ var Item = function () {
         }
 
         this.marker = new google.maps.Marker(markerOptions);
+        this.marker.addListener('mouseover', function () {
+            this.marker.setOptions({ zIndex: 9999999 });
+        }.bind(this));
+        this.marker.addListener('mouseout', function () {
+            this.marker.setOptions({ zIndex: this.index });
+        }.bind(this));
 
         this.link = this.element.attr('data-gmaps-link');
         if (this.link) {
@@ -285,7 +292,7 @@ var Item = function () {
             $window.on('keydown keyup', this.keys.bind(this));
 
             this.marker.addListener('click', this.open.bind(this));
-        } else {
+        } else if (this.element[0] != container) {
             var content = this.element.html();
             if (content && $.trim(content).length) {
                 this.infowindow = new google.maps.InfoWindow({
@@ -295,13 +302,6 @@ var Item = function () {
                 google.maps.event.addListener(this.infowindow, 'closeclick', this.close.bind(this));
 
                 this.marker.addListener('click', this.open.bind(this));
-
-                this.marker.addListener('mouseover', function () {
-                    this.marker.setOptions({ zIndex: 9999999 });
-                }.bind(this));
-                this.marker.addListener('mouseout', function () {
-                    this.marker.setOptions({ zIndex: this.index });
-                }.bind(this));
             }
         }
     }
