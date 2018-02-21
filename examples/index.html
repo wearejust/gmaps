@@ -2,17 +2,37 @@
 <html>
     <head>
         <title>GMaps - Just</title>
-        <script src="./javascript/build/app.js"></script>
+        <style>
+            body {
+                font-family: Helvetica, Arial, sans-serif;
+                margin: 1rem;
+            }
+            .gmaps {
+                background-color: #ccc;
+                height: 30rem;
+                margin-bottom: 5rem;
+            }
+        </style>
     </head>
     <body>
-        <h2>Location</h2>
-        <div class="gmaps-location" data-gmaps-latitude="52.1585399" data-gmaps-longitude="4.4922931"></div>
+        <h2>Single</h2>
+        <div class="gmaps gmaps-single" data-gmaps-latitude="52.1585399" data-gmaps-longitude="4.4922931">
+            <a href="https://wearejust.com">Just</a>
+        </div>
 
         <h2>List</h2>
-        <ul class="gmaps-list">
-            <li data-gmaps-latitude="52.1585399" data-gmaps-longitude="4.4922931"></li>
-            <li data-gmaps-latitude="52.1585399" data-gmaps-longitude="4.4922931"></li>
-            <li data-gmaps-latitude="52.1585399" data-gmaps-longitude="4.4922931"></li>
+        <ul class="gmaps gmaps-list">
+            <li data-gmaps-latitude="52.1585399" data-gmaps-longitude="4.4922931">
+                <a href="https://wearejust.com">Just</a>
+            </li>
+            <li data-gmaps-latitude="52.1585399" data-gmaps-longitude="4.4922931">
+                <a href="https://wearejust.com">Just</a>
+            </li>
+            <li data-gmaps-latitude="52.1585399" data-gmaps-longitude="4.4922931">
+                <a href="https://wearejust.com">Just</a>
+            </li>
         </ul>
+
+        <script src="./javascript/build/app.js"></script>
     </body>
 </html>

@@ -4,4 +4,4 @@ let options = {};
 
 let mapOptions = {};
 
-new GMaps('.gmaps-list', options, mapOptions);
+new GMaps('.gmaps-single', options, mapOptions);
