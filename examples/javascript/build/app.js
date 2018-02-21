@@ -91,7 +91,8 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var $ = __webpack_require__(3);
+var $ = __webpack_require__(3),
+    $window = $(window);
 
 var DEFAULT_OPTIONS = {
     apiKey: null,
@@ -122,8 +123,8 @@ module.exports = function () {
         if (!this.element.length || this.element.data('GMaps')) return;
         this.element.data('GMaps', this);
 
-        this.options = _extends(DEFAULT_OPTIONS, options);
-        this.mapOptions = _extends(DEFAULT_MAP_OPTIONS, mapOptions);
+        this.options = _extends({}, DEFAULT_OPTIONS, options);
+        this.mapOptions = _extends({}, DEFAULT_MAP_OPTIONS, mapOptions);
 
         if (!window.google) {
             queue.push(this);
@@ -136,11 +137,87 @@ module.exports = function () {
     }
 
     GMaps.prototype.init = function init() {
-        console.log(this);
+        this.map = new google.maps.Map(this.element[0], this.mapOptions);
+
+        this.bounds = new google.maps.LatLngBounds();
+        this.resize = this.resize.bind(this);
+        $window.on('resize', this.resize);
+
+        this.zoom = this.zoom.bind(this);
+        google.maps.event.addListener(this.map, 'zoom_changed', this.zoom);
+        google.maps.event.addListenerOnce(this.map, 'idle', this.resize);
+
+        this.add(this.element);
+
+        this.resize();
+    };
+
+    GMaps.prototype.add = function add(element) {
+        var lat = element.attr('data-gmaps-lat') || element.attr('data-gmaps-latitude');
+        var lng = element.attr('data-gmaps-lng') || element.attr('data-gmaps-longitude');
+        if (!lat || !lng) return;
+
+        var marker = new GMapsMarker(lat, lng);
+        this.bounds.extend(marker.position);
+    };
+
+    GMaps.prototype.resize = function resize() {
+        this.resizeZoom = true;
+        if (this.options.fit) {
+            this.map.fitBounds(this.bounds);
+        } else {
+            this.map.setCenter(this.bounds.getCenter());
+        }
+    };
+
+    GMaps.prototype.zoom = function zoom() {
+        if (this.resizeZoom) {
+            this.resizeZoom = false;
+
+            var z = this.map.getZoom();
+            var n = this.mapOptions.zoom;
+
+            if (this.options.fit) {
+                n = z + this.options.fitZoom;
+                if (this.options.fitZoomMin) {
+                    n = Math.max(this.options.fitZoomMin, n);
+                }
+                if (this.options.fitZoomMax) {
+                    n = Math.min(this.options.fitZoomMax, n);
+                }
+            }
+
+            if (n != z) this.map.setZoom(n);
+        }
+    };
+
+    GMaps.prototype.destroy = function destroy() {
+        var remove = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
+
+        google.maps.event.removeListener(this.map, 'zoom_changed', this.zoom);
+        google.maps.event.removeListener(this.map, 'idle', this.resize);
+        $window.off('resize', this.resize);
+        if (remove) this.element.remove();
     };
 
     return GMaps;
 }();
+/** 
+* @wearejust/gmaps 
+* Google Maps wrapper 
+* 
+* @version 2.0.0 
+* @author Emre Koc <emre.koc@wearejust.com> 
+*/
+"use strict";
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var GMapsMarker = function GMapsMarker(lat, lng) {
+    _classCallCheck(this, GMapsMarker);
+
+    this.position = new google.maps.LatLng(lat, lng);
+};
 
 /***/ }),
 /* 2 */
@@ -148,7 +225,9 @@ module.exports = function () {
 
 const GMaps = __webpack_require__(1); // Replace with '@wearejust/gmaps'
 
-let options = {};
+let options = {
+    apiKey: 'AIzaSyCopZ8YCVh9jkKZcXqOLWBaJNuZ-SbSsRs', // Replace with your API key
+};
 
 let mapOptions = {};
 
@@ -10540,7 +10619,9 @@ module.exports = __webpack_require__(0);
 
 const GMaps = __webpack_require__(1); // Replace with '@wearejust/gmaps'
 
-let options = {};
+let options = {
+    apiKey: 'AIzaSyCopZ8YCVh9jkKZcXqOLWBaJNuZ-SbSsRs', // Replace with your API key
+};
 
 let mapOptions = {};
 
