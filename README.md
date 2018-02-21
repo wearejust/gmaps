@@ -1,4 +1,5 @@
 # GMaps
+Turns an element into [Google Maps](https://developers.google.com/maps/).
 
 ## Installation
 ```
@@ -11,9 +12,17 @@ yarn add @wearejust/gmaps
 ```javascript
 const GMaps = require('@wearejust/gmaps');
 
+// Turn element into Google Maps
 let gmaps = new GMaps(element, options, mapOptions);
+
+// Remove element
+gmaps.destroy();
+
+// Remove only listeners
+gmaps.destroy(false);
 ```
 `Element` can be a DOM element, selector string or jQuery object. See **examples** folder for more details
+
 
 ### Options
 | Key | Value | Default | Description |
