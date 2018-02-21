@@ -1,7 +1,8 @@
 const $ = require('jquery');
 
 const DEFAULT_OPTIONS = {
-    apiKey: 'KEY',
+    apiKey: null,
+    fit: true,
     fitZoom: -1,
     fitZoomMin: 0,
     fitZoomMax: 10,

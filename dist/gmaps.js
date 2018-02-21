@@ -14,7 +14,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 var $ = require('jquery');
 
 var DEFAULT_OPTIONS = {
-    apiKey: 'KEY',
+    apiKey: null,
+    fit: true,
     fitZoom: -1,
     fitZoomMin: 0,
     fitZoomMax: 10

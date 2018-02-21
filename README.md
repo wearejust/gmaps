@@ -1,47 +1,37 @@
 # GMaps
 
-### Installation
+## Installation
 ```
-npm install @wearejust/gmaps --save
+npm install @wearejust/gmaps
+
+yarn add @wearejust/gmaps
 ```
 
-### Usage
-You can use *init* to set the default options and optional <a href="https://developers.google.com/maps/documentation/javascript/reference#MapOptions">MapOptions</a>, and/or override them with the jQuery usage.
+## Usage
 ```javascript
-var GMaps = require('@wearejust/gmaps');
+const GMaps = require('@wearejust/gmaps');
 
-$(function() {
-    GMaps.init({
-        // Options
-        apiKey: 'KEY',      // Your Google Maps API key
-        fitZoom: -1,        // Amount of extra zoom after fit (resize)
-        fitZoomMin: 0,      // Minimum zoom after fit (resize)
-        fitZoomMax: 10      // Maximum zoom after fit (resize)
-    }, {
-        // MapOptions
-        mapTypeControl: false,
-        streetViewControl: false,
-        zoom: 17
-    });
-});
+let gmaps = new GMaps(element, options, mapOptions);
 ```
+`Element` can be a DOM element, selector string or jQuery object. See **examples** folder for more details
 
-#### jQuery
-```javascript
-require('@wearejust/gmaps');
+### Options
+| Key | Value | Default | Description |
+|---|---|---|---|
+| apiKey | string | null | Your [Google Maps API key](https://developers.google.com/maps/documentation/javascript/get-api-key).  |
+| fit | boolean | true | Fit all markers on screen |
+| fitZoom | integer | -1 | Amount to zoom extra after `fit` |
+| fitZoomMin | integer | 0 | Minimum zoom after `fitZoom` |
+| fitZoomMax | integer | 10 | Maximum zoom after `fitZoom` |
 
-$(function() {
-    $('.gmaps').gmaps({
-        // Options
-        apiKey: 'KEY',      // Your Google Maps API key
-        fitZoom: -1,        // Amount of extra zoom after fit (resize)
-        fitZoomMin: 0,      // Minimum zoom after fit (resize)
-        fitZoomMax: 10      // Maximum zoom after fit (resize)
-    }, {
-        // MapOptions
-        mapTypeControl: false,
-        streetViewControl: false,
-        zoom: 17
-    });
-});
-```
+### MapOptions
+Default Google Maps MapOptions. For more see https://developers.google.com/maps/documentation/javascript/reference#MapOptions
+
+| Key | Default |
+|---|---|
+| mapTypeControl | false |
+| streetViewControl | false |
+| zoom | 17 |
+    
+
+
