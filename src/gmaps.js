@@ -6,7 +6,7 @@ const DEFAULT_OPTIONS = {
     fit: true,
     fitZoom: -1,
     fitZoomMin: 0,
-    fitZoomMax: 10,
+    fitZoomMax: 20,
 };
 
 const DEFAULT_MAP_OPTIONS = {
@@ -43,32 +43,57 @@ module.exports = class GMaps {
     }
     
     init() {
+        let markers = [this.element];
+
+        if (this.element.is('ul')) {
+            this.element.children('li').each((index, item) => {
+                markers.push($(item));
+            });
+        }
+
         this.map = new google.maps.Map(this.element[0], this.mapOptions);
 
+        this.markers = [];
         this.bounds = new google.maps.LatLngBounds();
-        this.resize = this.resize.bind(this);
-        $window.on('resize', this.resize);
 
+        for (let i=0; i<markers.length; i++) {
+            this.add(markers[i]);
+        }
+
+        this.resize = this.resize.bind(this);
         this.zoom = this.zoom.bind(this);
-        google.maps.event.addListener(this.map, 'zoom_changed', this.zoom);
+
         google.maps.event.addListenerOnce(this.map, 'idle', this.resize);
 
-        this.add(this.element);
-
+        $window.on('resize', this.resize);
         this.resize();
     }
 
     add(element) {
-        let lat = element.attr('data-gmaps-lat') || element.attr('data-gmaps-latitude');
-        let lng = element.attr('data-gmaps-lng') || element.attr('data-gmaps-longitude');
-        if (!lat || !lng) return;
+        let marker = new GMapsMarker(element, this.map);
+        if (!marker.element) return;
 
-        let marker = new GMapsMarker(lat, lng);
         this.bounds.extend(marker.position);
+        this.markers.push(marker);
+        this.markers = this.markers.sort((a, b) => {
+            let aVal = a.position.lat();
+            let bVal = b.position.lat();
+            if (aVal == bVal) {
+                aVal = a.position.lng();
+                bVal = b.position.lng();
+            }
+            if (aVal > bVal) return -1;
+            if (aVal < bVal) return 1;
+            return 0;
+        });
+
+        this.markers.forEach((marker, index) => {
+            marker.index = index;
+        });
     }
 
     resize() {
-        this.resizeZoom = true;
+        google.maps.event.addListenerOnce(this.map, 'zoom_changed', this.zoom);
         if (this.options.fit) {
             this.map.fitBounds(this.bounds);
         } else {
@@ -77,24 +102,20 @@ module.exports = class GMaps {
     }
 
     zoom() {
-        if (this.resizeZoom) {
-            this.resizeZoom = false;
+        let z = this.map.getZoom();
+        let n = this.mapOptions.zoom;
 
-            let z = this.map.getZoom();
-            let n = this.mapOptions.zoom;
-            
-            if (this.options.fit) {
-                n = z + this.options.fitZoom;
-                if (this.options.fitZoomMin) {
-                    n = Math.max(this.options.fitZoomMin, n);
-                }
-                if (this.options.fitZoomMax) {
-                    n = Math.min(this.options.fitZoomMax, n);
-                }
+        if (this.options.fit) {
+            n = z + this.options.fitZoom;
+            if (this.options.fitZoomMin) {
+                n = Math.max(this.options.fitZoomMin, n);
             }
-
-            if (n != z) this.map.setZoom(n);
+            if (this.options.fitZoomMax) {
+                n = Math.min(this.options.fitZoomMax, n);
+            }
         }
+
+        if (n != z) this.map.setZoom(n);
     }
 
     destroy(remove = true) {

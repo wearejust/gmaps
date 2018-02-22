@@ -15,21 +15,30 @@
         </style>
     </head>
     <body>
-        <h2>Single</h2>
-        <div class="gmaps gmaps-single" data-gmaps-latitude="52.1585399" data-gmaps-longitude="4.4922931">
-            <a href="https://wearejust.com">Just</a>
-        </div>
 
-        <h2>List</h2>
+        <h2>Single location</h2>
+        <div class="gmaps gmaps-single" data-gmaps-location="52.1585401,4.4944831"></div>
+
+        <h2>List of locations</h2>
         <ul class="gmaps gmaps-list">
-            <li data-gmaps-latitude="52.1585399" data-gmaps-longitude="4.4922931">
+            <li data-gmaps-location="52.1585401,4.4944831" title="Just">
                 <a href="https://wearejust.com">Just</a>
             </li>
-            <li data-gmaps-latitude="52.1585399" data-gmaps-longitude="4.4922931">
-                <a href="https://wearejust.com">Just</a>
+            <li data-gmaps-lat="52.1589738" data-gmaps-lng="4.4924244" title="Burcht">
+                <h3>Burcht</h3>
+                <p>Uses separate lat and lng data attributes.</p>
             </li>
-            <li data-gmaps-latitude="52.1585399" data-gmaps-longitude="4.4922931">
-                <a href="https://wearejust.com">Just</a>
+            <li data-gmaps-latitude="52.16612899564655" data-gmaps-longitude="4.477329438501101">
+                <h3 class="gmaps-title">LUMC</h3>
+                <p>Uses separate latitude and longitude data attributes.</p>
+            </li>
+            <li data-gmaps-latitude="52.16645596748503" data-gmaps-longitude="4.48213244387216">
+                <h3 class="gmaps-title">Info Window</h3>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sed orci et erat tempus ultrices. In ut nibh at augue semper congue. Praesent dictum velit eu dui sollicitudin, ut varius magna cursus.</p>
+            </li>
+            <li data-gmaps-latitude="52.15716299051512" data-gmaps-longitude="4.485222348657203" data-gmaps-overlay="custom">
+                <h3 class="gmaps-title">Custom Overlay</h3>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sed orci et erat tempus ultrices. In ut nibh at augue semper congue. Praesent dictum velit eu dui sollicitudin, ut varius magna cursus.</p>
             </li>
         </ul>
 

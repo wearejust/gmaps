@@ -92,7 +92,7 @@ var DEFAULT_OPTIONS = {
     fit: true,
     fitZoom: -1,
     fitZoomMin: 0,
-    fitZoomMax: 10
+    fitZoomMax: 20
 };
 
 var DEFAULT_MAP_OPTIONS = {
@@ -134,32 +134,57 @@ module.exports = function () {
     }
 
     GMaps.prototype.init = function init() {
+        var markers = [this.element];
+
+        if (this.element.is('ul')) {
+            this.element.children('li').each(function (index, item) {
+                markers.push($(item));
+            });
+        }
+
         this.map = new google.maps.Map(this.element[0], this.mapOptions);
 
+        this.markers = [];
         this.bounds = new google.maps.LatLngBounds();
-        this.resize = this.resize.bind(this);
-        $window.on('resize', this.resize);
 
+        for (var i = 0; i < markers.length; i++) {
+            this.add(markers[i]);
+        }
+
+        this.resize = this.resize.bind(this);
         this.zoom = this.zoom.bind(this);
-        google.maps.event.addListener(this.map, 'zoom_changed', this.zoom);
+
         google.maps.event.addListenerOnce(this.map, 'idle', this.resize);
 
-        this.add(this.element);
-
+        $window.on('resize', this.resize);
         this.resize();
     };
 
     GMaps.prototype.add = function add(element) {
-        var lat = element.attr('data-gmaps-lat') || element.attr('data-gmaps-latitude');
-        var lng = element.attr('data-gmaps-lng') || element.attr('data-gmaps-longitude');
-        if (!lat || !lng) return;
+        var marker = new GMapsMarker(element, this.map);
+        if (!marker.element) return;
 
-        var marker = new GMapsMarker(lat, lng);
         this.bounds.extend(marker.position);
+        this.markers.push(marker);
+        this.markers = this.markers.sort(function (a, b) {
+            var aVal = a.position.lat();
+            var bVal = b.position.lat();
+            if (aVal == bVal) {
+                aVal = a.position.lng();
+                bVal = b.position.lng();
+            }
+            if (aVal > bVal) return -1;
+            if (aVal < bVal) return 1;
+            return 0;
+        });
+
+        this.markers.forEach(function (marker, index) {
+            marker.index = index;
+        });
     };
 
     GMaps.prototype.resize = function resize() {
-        this.resizeZoom = true;
+        google.maps.event.addListenerOnce(this.map, 'zoom_changed', this.zoom);
         if (this.options.fit) {
             this.map.fitBounds(this.bounds);
         } else {
@@ -168,24 +193,20 @@ module.exports = function () {
     };
 
     GMaps.prototype.zoom = function zoom() {
-        if (this.resizeZoom) {
-            this.resizeZoom = false;
+        var z = this.map.getZoom();
+        var n = this.mapOptions.zoom;
 
-            var z = this.map.getZoom();
-            var n = this.mapOptions.zoom;
-
-            if (this.options.fit) {
-                n = z + this.options.fitZoom;
-                if (this.options.fitZoomMin) {
-                    n = Math.max(this.options.fitZoomMin, n);
-                }
-                if (this.options.fitZoomMax) {
-                    n = Math.min(this.options.fitZoomMax, n);
-                }
+        if (this.options.fit) {
+            n = z + this.options.fitZoom;
+            if (this.options.fitZoomMin) {
+                n = Math.max(this.options.fitZoomMin, n);
             }
-
-            if (n != z) this.map.setZoom(n);
+            if (this.options.fitZoomMax) {
+                n = Math.min(this.options.fitZoomMax, n);
+            }
         }
+
+        if (n != z) this.map.setZoom(n);
     };
 
     GMaps.prototype.destroy = function destroy() {
@@ -206,14 +227,40 @@ module.exports = function () {
 * @version 2.0.0 
 * @author Emre Koc <emre.koc@wearejust.com> 
 */
-"use strict";
+'use strict';
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var GMapsMarker = function GMapsMarker(lat, lng) {
+var GMapsMarker = function GMapsMarker(element, map) {
+    var _this = this;
+
     _classCallCheck(this, GMapsMarker);
 
+    if (!element.length) return;
+    var lat = void 0,
+        lng = void 0,
+        location = element.attr('data-gmaps-location');
+    if (location) location = location.split(',');
+    lat = location ? location[0] : element.attr('data-gmaps-lat') || element.attr('data-gmaps-latitude');
+    lng = location ? location[1] : element.attr('data-gmaps-lng') || element.attr('data-gmaps-longitude');
+    if (!lat || !lng) return;
+
+    this.element = element;
+    this.map = map;
     this.position = new google.maps.LatLng(lat, lng);
+
+    var markerOptions = {
+        draggable: true,
+        map: this.map,
+        position: this.position,
+        label: this.element.attr('data-gmaps-label'),
+        title: this.element.attr('data-gmaps-title') || this.element.attr('title') || this.element.find('.gmaps-title').text()
+    };
+
+    this.marker = new google.maps.Marker(markerOptions);
+    this.marker.addListener('dragend', function (e) {
+        console.log(_this.marker.getPosition().lat(), _this.marker.getPosition().lng());
+    });
 };
 
 /***/ }),
@@ -245,6 +292,7 @@ const GMaps = __webpack_require__(0); // Replace with '@wearejust/gmaps'
 
 let options = {
     apiKey: 'AIzaSyCopZ8YCVh9jkKZcXqOLWBaJNuZ-SbSsRs', // Replace with your API key
+    fit: false,
 };
 
 let mapOptions = {};

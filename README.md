@@ -37,7 +37,7 @@ See **examples** folder for more details
 | fit | boolean | true | Fit all markers on screen |
 | fitZoom | integer | -1 | Amount to zoom extra after `fit` |
 | fitZoomMin | integer | 0 | Minimum zoom after `fitZoom` |
-| fitZoomMax | integer | 10 | Maximum zoom after `fitZoom` |
+| fitZoomMax | integer | 20 | Maximum zoom after `fitZoom` |
 
 ### Map Options
 Default Google Maps MapOptions. For more see https://developers.google.com/maps/documentation/javascript/reference#MapOptions
