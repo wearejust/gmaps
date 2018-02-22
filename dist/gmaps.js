@@ -36,15 +36,19 @@ window.gmaps_load_callback = function () {
 };
 
 module.exports = function () {
-    function GMaps(element, options, mapOptions) {
+    function GMaps() {
+        var element = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '.gmaps';
+        var options = arguments[1];
+        var mapOptions = arguments[2];
+
         _classCallCheck(this, GMaps);
 
         this.element = $(element);
         if (!this.element.length || this.element.data('GMaps')) return;
         this.element.data('GMaps', this);
 
-        this.options = _extends({}, DEFAULT_OPTIONS, options);
-        this.mapOptions = _extends({}, DEFAULT_MAP_OPTIONS, mapOptions);
+        this.options = _extends({}, DEFAULT_OPTIONS, options || {});
+        this.mapOptions = _extends({}, DEFAULT_MAP_OPTIONS, mapOptions || {});
 
         if (!window.google) {
             queue.push(this);

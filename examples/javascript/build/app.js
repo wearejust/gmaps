@@ -63,18 +63,11 @@
 /******/ 	__webpack_require__.p = "/javascript/build/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 4);
+/******/ 	return __webpack_require__(__webpack_require__.s = 5);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(7);
-__webpack_require__(2);
-
-/***/ }),
-/* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -91,7 +84,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var $ = __webpack_require__(3),
+var $ = __webpack_require__(4),
     $window = $(window);
 
 var DEFAULT_OPTIONS = {
@@ -116,15 +109,19 @@ window.gmaps_load_callback = function () {
 };
 
 module.exports = function () {
-    function GMaps(element, options, mapOptions) {
+    function GMaps() {
+        var element = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '.gmaps';
+        var options = arguments[1];
+        var mapOptions = arguments[2];
+
         _classCallCheck(this, GMaps);
 
         this.element = $(element);
         if (!this.element.length || this.element.data('GMaps')) return;
         this.element.data('GMaps', this);
 
-        this.options = _extends({}, DEFAULT_OPTIONS, options);
-        this.mapOptions = _extends({}, DEFAULT_MAP_OPTIONS, mapOptions);
+        this.options = _extends({}, DEFAULT_OPTIONS, options || {});
+        this.mapOptions = _extends({}, DEFAULT_MAP_OPTIONS, mapOptions || {});
 
         if (!window.google) {
             queue.push(this);
@@ -220,10 +217,17 @@ var GMapsMarker = function GMapsMarker(lat, lng) {
 };
 
 /***/ }),
+/* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(3);
+__webpack_require__(2);
+
+/***/ }),
 /* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const GMaps = __webpack_require__(1); // Replace with '@wearejust/gmaps'
+const GMaps = __webpack_require__(0); // Replace with '@wearejust/gmaps'
 
 let options = {
     apiKey: 'AIzaSyCopZ8YCVh9jkKZcXqOLWBaJNuZ-SbSsRs', // Replace with your API key
@@ -235,6 +239,20 @@ new GMaps('.gmaps-list', options, mapOptions);
 
 /***/ }),
 /* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+const GMaps = __webpack_require__(0); // Replace with '@wearejust/gmaps'
+
+let options = {
+    apiKey: 'AIzaSyCopZ8YCVh9jkKZcXqOLWBaJNuZ-SbSsRs', // Replace with your API key
+};
+
+let mapOptions = {};
+
+new GMaps('.gmaps-single', options, mapOptions);
+
+/***/ }),
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -10605,27 +10623,11 @@ return jQuery;
 
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(0);
+module.exports = __webpack_require__(1);
 
-
-/***/ }),
-/* 5 */,
-/* 6 */,
-/* 7 */
-/***/ (function(module, exports, __webpack_require__) {
-
-const GMaps = __webpack_require__(1); // Replace with '@wearejust/gmaps'
-
-let options = {
-    apiKey: 'AIzaSyCopZ8YCVh9jkKZcXqOLWBaJNuZ-SbSsRs', // Replace with your API key
-};
-
-let mapOptions = {};
-
-new GMaps('.gmaps-single', options, mapOptions);
 
 /***/ })
 /******/ ]);

@@ -23,13 +23,13 @@ window.gmaps_load_callback = function() {
 };
 
 module.exports = class GMaps {
-    constructor(element, options, mapOptions) {
+    constructor(element = '.gmaps', options, mapOptions) {
         this.element = $(element);
         if (!this.element.length || this.element.data('GMaps')) return;
         this.element.data('GMaps', this);
 
-        this.options = Object.assign({}, DEFAULT_OPTIONS, options);
-        this.mapOptions = Object.assign({}, DEFAULT_MAP_OPTIONS, mapOptions);
+        this.options = Object.assign({}, DEFAULT_OPTIONS, options || {});
+        this.mapOptions = Object.assign({}, DEFAULT_MAP_OPTIONS, mapOptions || {});
 
         if (!window.google) {
             queue.push(this);

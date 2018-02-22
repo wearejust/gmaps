@@ -21,8 +21,14 @@ gmaps.destroy();
 // Remove only listeners
 gmaps.destroy(false);
 ```
-`Element` can be a DOM element, selector string or jQuery object. See **examples** folder for more details
 
+| Parameter | Value | Default | Description |
+|---|---|---|---|
+| element | DOM, string, object | .gmaps | Can be DOM element, selector string or jQuery object |
+| options | object | null | See [Options](#options) below |
+| mapOptions | object | null | See [Map Options](#map-options) below |
+
+See **examples** folder for more details
 
 ### Options
 | Key | Value | Default | Description |
@@ -33,7 +39,7 @@ gmaps.destroy(false);
 | fitZoomMin | integer | 0 | Minimum zoom after `fitZoom` |
 | fitZoomMax | integer | 10 | Maximum zoom after `fitZoom` |
 
-### MapOptions
+### Map Options
 Default Google Maps MapOptions. For more see https://developers.google.com/maps/documentation/javascript/reference#MapOptions
 
 | Key | Default |
