@@ -18,6 +18,16 @@ class GMapsMarker {
             title: this.element.attr('data-gmaps-title') || this.element.attr('title') || this.element.find('.gmaps-title').text(),
         };
 
+        let marker = this.gmaps.options.markers ? this.gmaps.options.markers[this.element.attr('data-gmaps-marker')] : null;
+        if (marker) {
+            if (marker.label && options.label) {
+                marker.label.text = options.label;
+            }
+            options = Object.assign(options, marker);
+        }
+        
+        console.log(options);
+
         this.marker = new google.maps.Marker(options);
         this.marker.addListener('mouseover', this.mouseover.bind(this));
         this.marker.addListener('mouseout', this.mouseout.bind(this));

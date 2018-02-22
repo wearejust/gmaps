@@ -236,6 +236,8 @@ module.exports = function () {
 */
 'use strict';
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var GMapsMarker = function () {
@@ -261,6 +263,16 @@ var GMapsMarker = function () {
             label: this.element.attr('data-gmaps-label'),
             title: this.element.attr('data-gmaps-title') || this.element.attr('title') || this.element.find('.gmaps-title').text()
         };
+
+        var marker = this.gmaps.options.markers ? this.gmaps.options.markers[this.element.attr('data-gmaps-marker')] : null;
+        if (marker) {
+            if (marker.label && options.label) {
+                marker.label.text = options.label;
+            }
+            options = _extends(options, marker);
+        }
+
+        console.log(options);
 
         this.marker = new google.maps.Marker(options);
         this.marker.addListener('mouseover', this.mouseover.bind(this));
@@ -314,6 +326,17 @@ const GMaps = __webpack_require__(0); // Replace with '@wearejust/gmaps'
 
 let options = {
     apiKey: 'AIzaSyCopZ8YCVh9jkKZcXqOLWBaJNuZ-SbSsRs', // Replace with your API key
+    markers: {
+        just: {
+            icon: {
+                url: 'assets/just.png',
+                size: { width: 48, height: 48, },
+                scaledSize: { width: 24, height: 24, },
+                origin: { x: 0, y: 0, },
+                anchor: { x: 12, y: 12, },
+            },
+        },
+    },
 };
 
 let mapOptions = {};
