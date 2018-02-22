@@ -23,13 +23,14 @@ window.gmaps_load_callback = function() {
 };
 
 module.exports = class GMaps {
-    constructor(element = '.gmaps', options, mapOptions) {
+    constructor(element = '.gmaps', options, mapOptions, callback) {
         this.element = $(element);
         if (!this.element.length || this.element.data('GMaps')) return;
         this.element.data('GMaps', this);
 
         this.options = Object.assign({}, DEFAULT_OPTIONS, options || {});
         this.mapOptions = Object.assign({}, DEFAULT_MAP_OPTIONS, mapOptions || {});
+        this.callback = callback;
 
         if (!window.google) {
             queue.push(this);
@@ -43,21 +44,25 @@ module.exports = class GMaps {
     }
     
     init() {
+        let container = this.element.attr('data-gmaps-container');
         let markers = [this.element];
         if (this.element.is('ul')) {
             this.element.children('li').each((index, item) => {
                 markers.push($(item));
             });
 
-            let replacement = $(`<div></div>`);
-            $.each(this.element[0].attributes, (index, item) => {
-                replacement.attr(item.name, item.value);
-            });
-            this.element.replaceWith(replacement);
-            this.element = replacement;
+            if (!container) {
+                let replacement = $(`<div></div>`);
+                $.each(this.element[0].attributes, (index, item) => {
+                    replacement.attr(item.name, item.value);
+                });
+                this.element.replaceWith(replacement);
+                this.element = replacement;
+            }
         }
 
-        this.map = new google.maps.Map(this.element[0], this.mapOptions);
+        container = $(container || this.element);
+        this.map = new google.maps.Map(container[0], this.mapOptions);
 
         this.markers = [];
         this.bounds = new google.maps.LatLngBounds();
@@ -71,15 +76,13 @@ module.exports = class GMaps {
         }
 
         this.markers = this.markers.sort((a, b) => {
-            let aVal = a.position.lat();
-            let bVal = b.position.lat();
+            let aVal = a.position.lat(),
+                bVal = b.position.lat();
             if (aVal == bVal) {
                 aVal = a.position.lng();
                 bVal = b.position.lng();
             }
-            if (aVal > bVal) return -1;
-            if (aVal < bVal) return 1;
-            return 0;
+            return (aVal > bVal) ? -1 : (aVal < bVal ? 1 : 0);
         });
         this.markers.forEach((marker, index) => {
             marker.index = index;
@@ -98,6 +101,10 @@ module.exports = class GMaps {
 
         $window.on('resize', this.resize);
         this.resize();
+
+        if (typeof this.callback == 'function') {
+            this.callback(this);
+        }
     }
 
     focus(e) {
@@ -121,14 +128,7 @@ module.exports = class GMaps {
         if (e.type == 'keydown') {
             if (e.keyCode == 9) { // Tab
                 this.tabIndex = Math.max(-1, Math.min(this.markers.length, this.tabIndex + (e.shiftKey ? -1 : 1)));
-                let i, active = false;
-                if (this.tabIndex >= 0 && this.tabIndex < this.markers.length) {
-                    e.preventDefault();
-                    active = true;
-                }
-                for (i=0; i<this.markers.length; i++) {
-                    this.markers[i].highlight(i == this.tabIndex, active);
-                }
+                this.highlight(this.tabIndex);
 
             } else if (e.keyCode == 13 || e.keyCode == 32) { // Space or Enter
                 if (this.tabIndex >= 0 && this.tabIndex < this.markers.length) {
@@ -138,6 +138,13 @@ module.exports = class GMaps {
             } else if (e.keyCode == 27) { // Esc
                 this.closeAllMarkers();
             }
+        }
+    }
+
+    highlight(index) {
+        let active = (index !== undefined && index >= 0 && index < this.markers.length);
+        for (let i=0; i<this.markers.length; i++) {
+            this.markers[i].highlight(i == index, active);
         }
     }
 

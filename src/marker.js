@@ -10,6 +10,7 @@ class GMapsMarker {
         this.element = element;
         this.gmaps = gmaps;
         this.position = new google.maps.LatLng(lat, lng);
+        this.element.data('GMapsMarker', this);
 
         let options = {
             map: this.gmaps.map,

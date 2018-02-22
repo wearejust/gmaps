@@ -40,6 +40,7 @@ module.exports = function () {
         var element = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '.gmaps';
         var options = arguments[1];
         var mapOptions = arguments[2];
+        var callback = arguments[3];
 
         _classCallCheck(this, GMaps);
 
@@ -49,6 +50,7 @@ module.exports = function () {
 
         this.options = _extends({}, DEFAULT_OPTIONS, options || {});
         this.mapOptions = _extends({}, DEFAULT_MAP_OPTIONS, mapOptions || {});
+        this.callback = callback;
 
         if (!window.google) {
             queue.push(this);
@@ -61,21 +63,25 @@ module.exports = function () {
     }
 
     GMaps.prototype.init = function init() {
+        var container = this.element.attr('data-gmaps-container');
         var markers = [this.element];
         if (this.element.is('ul')) {
             this.element.children('li').each(function (index, item) {
                 markers.push($(item));
             });
 
-            var replacement = $('<div></div>');
-            $.each(this.element[0].attributes, function (index, item) {
-                replacement.attr(item.name, item.value);
-            });
-            this.element.replaceWith(replacement);
-            this.element = replacement;
+            if (!container) {
+                var replacement = $('<div></div>');
+                $.each(this.element[0].attributes, function (index, item) {
+                    replacement.attr(item.name, item.value);
+                });
+                this.element.replaceWith(replacement);
+                this.element = replacement;
+            }
         }
 
-        this.map = new google.maps.Map(this.element[0], this.mapOptions);
+        container = $(container || this.element);
+        this.map = new google.maps.Map(container[0], this.mapOptions);
 
         this.markers = [];
         this.bounds = new google.maps.LatLngBounds();
@@ -90,15 +96,13 @@ module.exports = function () {
         }
 
         this.markers = this.markers.sort(function (a, b) {
-            var aVal = a.position.lat();
-            var bVal = b.position.lat();
+            var aVal = a.position.lat(),
+                bVal = b.position.lat();
             if (aVal == bVal) {
                 aVal = a.position.lng();
                 bVal = b.position.lng();
             }
-            if (aVal > bVal) return -1;
-            if (aVal < bVal) return 1;
-            return 0;
+            return aVal > bVal ? -1 : aVal < bVal ? 1 : 0;
         });
         this.markers.forEach(function (marker, index) {
             marker.index = index;
@@ -117,6 +121,10 @@ module.exports = function () {
 
         $window.on('resize', this.resize);
         this.resize();
+
+        if (typeof this.callback == 'function') {
+            this.callback(this);
+        }
     };
 
     GMaps.prototype.focus = function focus(e) {
@@ -143,15 +151,7 @@ module.exports = function () {
             if (e.keyCode == 9) {
                 // Tab
                 this.tabIndex = Math.max(-1, Math.min(this.markers.length, this.tabIndex + (e.shiftKey ? -1 : 1)));
-                var i = void 0,
-                    active = false;
-                if (this.tabIndex >= 0 && this.tabIndex < this.markers.length) {
-                    e.preventDefault();
-                    active = true;
-                }
-                for (i = 0; i < this.markers.length; i++) {
-                    this.markers[i].highlight(i == this.tabIndex, active);
-                }
+                this.highlight(this.tabIndex);
             } else if (e.keyCode == 13 || e.keyCode == 32) {
                 // Space or Enter
                 if (this.tabIndex >= 0 && this.tabIndex < this.markers.length) {
@@ -161,6 +161,13 @@ module.exports = function () {
                 // Esc
                 this.closeAllMarkers();
             }
+        }
+    };
+
+    GMaps.prototype.highlight = function highlight(index) {
+        var active = index !== undefined && index >= 0 && index < this.markers.length;
+        for (var i = 0; i < this.markers.length; i++) {
+            this.markers[i].highlight(i == index, active);
         }
     };
 
@@ -237,6 +244,7 @@ var GMapsMarker = function () {
         this.element = element;
         this.gmaps = gmaps;
         this.position = new google.maps.LatLng(lat, lng);
+        this.element.data('GMapsMarker', this);
 
         var options = {
             map: this.gmaps.map,

@@ -12,6 +12,12 @@
                 height: 30rem;
                 margin-bottom: 5rem;
             }
+            .gmaps-container li {
+                cursor: pointer;
+            }
+            .gmaps-container li:hover {
+                opacity: 0.5;
+            }
         </style>
     </head>
     <body>
@@ -28,19 +34,27 @@
                 <h3>Burcht</h3>
                 <p>Uses separate lat and lng data attributes.</p>
             </li>
-            <li data-gmaps-latitude="52.16612899564655" data-gmaps-longitude="4.477329438501101">
+            <li data-gmaps-latitude="52.1661289" data-gmaps-longitude="4.4773294">
                 <h3 class="gmaps-title">LUMC</h3>
                 <p>Uses separate latitude and longitude data attributes.</p>
             </li>
-            <li data-gmaps-latitude="52.16645596748503" data-gmaps-longitude="4.48213244387216">
+            <li data-gmaps-latitude="52.1664559" data-gmaps-longitude="4.4821324">
                 <h3 class="gmaps-title">Info Window</h3>
                 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sed orci et erat tempus ultrices. In ut nibh at augue semper congue. Praesent dictum velit eu dui sollicitudin, ut varius magna cursus.</p>
             </li>
-            <li data-gmaps-latitude="52.15716299051512" data-gmaps-longitude="4.485222348657203" data-gmaps-overlay="custom">
+            <li data-gmaps-latitude="52.1571629" data-gmaps-longitude="4.48522234" data-gmaps-overlay="custom">
                 <h3 class="gmaps-title">Custom Overlay</h3>
                 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sed orci et erat tempus ultrices. In ut nibh at augue semper congue. Praesent dictum velit eu dui sollicitudin, ut varius magna cursus.</p>
             </li>
         </ul>
+
+        <h2>Separate container</h2>
+        <ul class="gmaps-container" data-gmaps-container=".gmaps-container-container">
+            <li data-gmaps-location="52.1585401,4.4944831">Just</li>
+            <li data-gmaps-location="52.1589738,4.4924244">Burcht</li>
+            <li data-gmaps-location="52.1661289,4.4773294">LUMC</li>
+        </ul>
+        <div class="gmaps gmaps-container-container"></div>
 
         <script src="./javascript/build/app.js"></script>
     </body>
