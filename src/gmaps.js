@@ -60,17 +60,23 @@ module.exports = class GMaps {
             this.add(markers[i]);
         }
 
+        this.keys = this.keys.bind(this);
         this.resize = this.resize.bind(this);
         this.zoom = this.zoom.bind(this);
 
         google.maps.event.addListenerOnce(this.map, 'idle', this.resize);
 
+        $window.on('keydown keyup', this.keys);
         $window.on('resize', this.resize);
         this.resize();
     }
 
+    keys(e) {
+        this.metaKey = e.type == 'keydown' && (e.ctrlKey || e.metaKey);
+    }
+
     add(element) {
-        let marker = new GMapsMarker(element, this.map);
+        let marker = new GMapsMarker(this, element);
         if (!marker.element) return;
 
         this.bounds.extend(marker.position);
@@ -121,6 +127,7 @@ module.exports = class GMaps {
     destroy(remove = true) {
         google.maps.event.removeListener(this.map, 'zoom_changed', this.zoom);
         google.maps.event.removeListener(this.map, 'idle', this.resize);
+        $window.off('keydown keyup', this.keys);
         $window.off('resize', this.resize);
         if (remove) this.element.remove();
     }

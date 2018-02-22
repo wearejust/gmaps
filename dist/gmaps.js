@@ -78,17 +78,23 @@ module.exports = function () {
             this.add(markers[i]);
         }
 
+        this.keys = this.keys.bind(this);
         this.resize = this.resize.bind(this);
         this.zoom = this.zoom.bind(this);
 
         google.maps.event.addListenerOnce(this.map, 'idle', this.resize);
 
+        $window.on('keydown keyup', this.keys);
         $window.on('resize', this.resize);
         this.resize();
     };
 
+    GMaps.prototype.keys = function keys(e) {
+        this.metaKey = e.type == 'keydown' && (e.ctrlKey || e.metaKey);
+    };
+
     GMaps.prototype.add = function add(element) {
-        var marker = new GMapsMarker(element, this.map);
+        var marker = new GMapsMarker(this, element);
         if (!marker.element) return;
 
         this.bounds.extend(marker.position);
@@ -141,6 +147,7 @@ module.exports = function () {
 
         google.maps.event.removeListener(this.map, 'zoom_changed', this.zoom);
         google.maps.event.removeListener(this.map, 'idle', this.resize);
+        $window.off('keydown keyup', this.keys);
         $window.off('resize', this.resize);
         if (remove) this.element.remove();
     };
@@ -158,34 +165,63 @@ module.exports = function () {
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var GMapsMarker = function GMapsMarker(element, map) {
-    var _this = this;
+var GMapsMarker = function () {
+    function GMapsMarker(gmaps, element) {
+        _classCallCheck(this, GMapsMarker);
 
-    _classCallCheck(this, GMapsMarker);
+        if (!element.length) return;
+        var lat = void 0,
+            lng = void 0,
+            location = element.attr('data-gmaps-location');
+        if (location) location = location.split(',');
+        lat = location ? location[0] : element.attr('data-gmaps-lat') || element.attr('data-gmaps-latitude');
+        lng = location ? location[1] : element.attr('data-gmaps-lng') || element.attr('data-gmaps-longitude');
+        if (!lat || !lng) return;
 
-    if (!element.length) return;
-    var lat = void 0,
-        lng = void 0,
-        location = element.attr('data-gmaps-location');
-    if (location) location = location.split(',');
-    lat = location ? location[0] : element.attr('data-gmaps-lat') || element.attr('data-gmaps-latitude');
-    lng = location ? location[1] : element.attr('data-gmaps-lng') || element.attr('data-gmaps-longitude');
-    if (!lat || !lng) return;
+        this.element = element;
+        this.gmaps = gmaps;
+        this.position = new google.maps.LatLng(lat, lng);
 
-    this.element = element;
-    this.map = map;
-    this.position = new google.maps.LatLng(lat, lng);
+        var options = {
+            map: this.gmaps.map,
+            position: this.position,
+            label: this.element.attr('data-gmaps-label'),
+            title: this.element.attr('data-gmaps-title') || this.element.attr('title') || this.element.find('.gmaps-title').text()
+        };
 
-    var markerOptions = {
-        draggable: true,
-        map: this.map,
-        position: this.position,
-        label: this.element.attr('data-gmaps-label'),
-        title: this.element.attr('data-gmaps-title') || this.element.attr('title') || this.element.find('.gmaps-title').text()
+        this.marker = new google.maps.Marker(options);
+        this.marker.addListener('mouseover', this.mouseover.bind(this));
+        this.marker.addListener('mouseout', this.mouseout.bind(this));
+        this.marker.addListener('click', this.click.bind(this));
+
+        var anchor = this.element.children('a');
+        if (anchor.length) {
+            this.link = anchor.attr('href');
+            this.linkBlank = anchor.attr('target') == '_blank';
+        }
+    }
+
+    GMapsMarker.prototype.mouseover = function mouseover() {
+        this.marker.setOptions({
+            zIndex: 9999999
+        });
     };
 
-    this.marker = new google.maps.Marker(markerOptions);
-    this.marker.addListener('dragend', function (e) {
-        console.log(_this.marker.getPosition().lat(), _this.marker.getPosition().lng());
-    });
-};
+    GMapsMarker.prototype.mouseout = function mouseout() {
+        this.marker.setOptions({
+            zIndex: this.index
+        });
+    };
+
+    GMapsMarker.prototype.click = function click() {
+        if (this.link) {
+            if (this.gmaps.metaKey || this.linkBlank) {
+                window.open(this.link);
+            } else {
+                window.location = this.link;
+            }
+        }
+    };
+
+    return GMapsMarker;
+}();

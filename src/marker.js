@@ -1,5 +1,5 @@
 class GMapsMarker {
-    constructor(element, map) {
+    constructor(gmaps, element) {
         if (!element.length) return;
         let lat, lng, location = element.attr('data-gmaps-location');
         if (location) location = location.split(',');
@@ -8,20 +8,46 @@ class GMapsMarker {
         if (!lat || !lng) return;
 
         this.element = element;
-        this.map = map;
+        this.gmaps = gmaps;
         this.position = new google.maps.LatLng(lat, lng);
 
-        let markerOptions = {
-            draggable: true,
-            map: this.map,
+        let options = {
+            map: this.gmaps.map,
             position: this.position,
             label: this.element.attr('data-gmaps-label'),
             title: this.element.attr('data-gmaps-title') || this.element.attr('title') || this.element.find('.gmaps-title').text(),
         };
 
-        this.marker = new google.maps.Marker(markerOptions);
-        this.marker.addListener('dragend', (e) => {
-            console.log(this.marker.getPosition().lat(), this.marker.getPosition().lng());
+        this.marker = new google.maps.Marker(options);
+        this.marker.addListener('mouseover', this.mouseover.bind(this));
+        this.marker.addListener('mouseout', this.mouseout.bind(this));
+        this.marker.addListener('click', this.click.bind(this));
+        
+        let anchor = this.element.children('a'); 
+        if (anchor.length) {
+            this.link = anchor.attr('href');
+            this.linkBlank = anchor.attr('target') == '_blank';
+        }
+    }
+
+    mouseover() {
+        this.marker.setOptions({
+            zIndex: 9999999,
         });
+    }
+    mouseout() {
+        this.marker.setOptions({
+            zIndex: this.index,
+        });
+    }
+
+    click() {
+        if (this.link) {
+            if (this.gmaps.metaKey || this.linkBlank) {
+                window.open(this.link);
+            } else {
+                window.location = this.link;
+            }
+        }
     }
 }
