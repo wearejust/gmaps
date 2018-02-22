@@ -15,6 +15,15 @@ const DEFAULT_MAP_OPTIONS = {
     zoom: 17
 };
 
+$.fn.gmaps = function(options, mapOptions, callback) {
+    return $(this).each((index, item) => {
+        new module.exports(item, options, mapOptions, callback);
+    });
+};
+if (window.$) {
+    window.$.fn.gmaps = $.fn.gmaps;
+}
+
 let queue = [];
 window.gmaps_load_callback = function() {
     while (queue.length) {
@@ -26,6 +35,12 @@ module.exports = class GMaps {
     constructor(element = '.gmaps', options, mapOptions, callback) {
         this.element = $(element);
         if (!this.element.length || this.element.data('GMaps')) return;
+
+        if (this.element.length > 1) {
+            this.element.gmaps(options, mapOptions, callback);
+            return;
+        }
+
         this.element.data('GMaps', this);
 
         this.options = Object.assign({}, DEFAULT_OPTIONS, options || {});
@@ -132,6 +147,7 @@ module.exports = class GMaps {
 
             } else if (e.keyCode == 13 || e.keyCode == 32) { // Space or Enter
                 if (this.tabIndex >= 0 && this.tabIndex < this.markers.length) {
+                    e.preventDefault();
                     this.markers[this.tabIndex].open();
                 }
 

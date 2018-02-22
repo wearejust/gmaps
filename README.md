@@ -13,7 +13,10 @@ yarn add @wearejust/gmaps
 const GMaps = require('@wearejust/gmaps');
 
 // Turn element into Google Maps
-let gmaps = new GMaps(element, options, mapOptions);
+let gmaps = new GMaps(element, options, mapOptions, callback);
+
+// Or use jQuery
+$('.gmaps').gmaps(options, mapOptions, callback);
 
 // Remove element
 gmaps.destroy();
@@ -27,6 +30,7 @@ gmaps.destroy(false);
 | element | DOM, string, object | .gmaps | Can be DOM element, selector string or jQuery object |
 | options | object | null | See [Options](#options) below |
 | mapOptions | object | null | See [Map Options](#map-options) below |
+| callback | function | null | Callback when GMaps is initialized |
 
 See **examples** folder for more details
 
