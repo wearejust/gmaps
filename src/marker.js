@@ -15,7 +15,7 @@ module.exports = class Marker {
         this.element.data('GMapsMarker', this);
 
         let options = {
-            map: this.gmaps.map,
+            map: this.gmaps.options.cluster ? null : this.gmaps.map,
             position: this.position,
             label: this.element.attr('data-gmaps-label'),
             title: this.element.attr('data-gmaps-title') || this.element.attr('title') || this.element.find('.gmaps-title').text(),

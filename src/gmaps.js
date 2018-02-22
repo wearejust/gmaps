@@ -1,6 +1,8 @@
 const $ = require('jquery'),
-    $window = $(window),
+    MarkerClusterer = require('node-js-marker-clusterer'),
     Marker = require('./marker');
+
+const $window = $(window);
 
 const DEFAULT_OPTIONS = {
     apiKey: null,
@@ -103,6 +105,13 @@ global.GMaps = module.exports = class GMaps {
         this.markers.forEach((marker, index) => {
             marker.index = index;
         });
+
+        if (this.options.cluster) {
+            let markers = this.markers.map(item => {
+                return item.marker;
+            });
+            new MarkerClusterer(this.map, markers, this.options.cluster);
+        }
 
         this.keys = this.keys.bind(this);
         this.resize = this.resize.bind(this);

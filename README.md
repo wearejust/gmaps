@@ -37,7 +37,8 @@ See **examples** folder for more details
 ### Options
 | Key | Value | Default | Description |
 |---|---|---|---|
-| apiKey | string | null | Your [Google Maps API key](https://developers.google.com/maps/documentation/javascript/get-api-key).  |
+| apiKey | string | null | Your [Google Maps API key](https://developers.google.com/maps/documentation/javascript/get-api-key) |
+| cluster | object | null | Enable [Marker Clustering](https://developers.google.com/maps/documentation/javascript/marker-clustering) |
 | fit | boolean | true | Fit all markers on screen |
 | fitZoom | integer | -1 | Amount to zoom extra after `fit` |
 | fitZoomMin | integer | 0 | Minimum zoom after `fitZoom` |

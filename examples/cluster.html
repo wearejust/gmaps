@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+    <head>
+        <title>GMaps - Cluster</title>
+        <link href="assets/main.css" rel="stylesheet" type="text/css">
+    </head>
+    <body>
+        <h1>Cluster</h1>
+        <p>This will cluster markers that come too close to each other.</p>
+
+        <ul class="gmaps">
+            <li data-gmaps-location="52.1585401,4.4944831">Just</li>
+            <li data-gmaps-location="52.1589738,4.4924244">Burcht</li>
+            <li data-gmaps-location="52.1661289,4.4773294">LUMC</li>
+        </ul>
+
+        <script src="../dist/gmaps.js"></script>
+        <script>
+            let options = {
+                apiKey: 'AIzaSyCopZ8YCVh9jkKZcXqOLWBaJNuZ-SbSsRs', // Replace with your API key
+                cluster: {
+                    imagePath: 'assets/cluster'
+                },
+            };
+
+            let mapOptions = {};
+
+            new GMaps('.gmaps', options, mapOptions);
+        </script>
+    </body>
+</html>
