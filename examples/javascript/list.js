@@ -13,6 +13,11 @@ let options = {
             },
         },
     },
+    infowindows: {
+        burcht: {
+            maxWidth: 200,
+        },
+    },
 };
 
 let mapOptions = {};

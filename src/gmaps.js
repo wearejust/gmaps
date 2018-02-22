@@ -44,7 +44,6 @@ module.exports = class GMaps {
     
     init() {
         let markers = [this.element];
-
         if (this.element.is('ul')) {
             this.element.children('li').each((index, item) => {
                 markers.push($(item));
@@ -56,9 +55,28 @@ module.exports = class GMaps {
         this.markers = [];
         this.bounds = new google.maps.LatLngBounds();
 
-        for (let i=0; i<markers.length; i++) {
-            this.add(markers[i]);
+        let i, marker;
+        for (i=0; i<markers.length; i++) {
+            marker = new GMapsMarker(this, markers[i]);
+            if (!marker.element) continue;
+            this.bounds.extend(marker.position);
+            this.markers.push(marker);
         }
+
+        this.markers = this.markers.sort((a, b) => {
+            let aVal = a.position.lat();
+            let bVal = b.position.lat();
+            if (aVal == bVal) {
+                aVal = a.position.lng();
+                bVal = b.position.lng();
+            }
+            if (aVal > bVal) return -1;
+            if (aVal < bVal) return 1;
+            return 0;
+        });
+        this.markers.forEach((marker, index) => {
+            marker.index = index;
+        });
 
         this.keys = this.keys.bind(this);
         this.resize = this.resize.bind(this);
@@ -73,29 +91,12 @@ module.exports = class GMaps {
 
     keys(e) {
         this.metaKey = e.type == 'keydown' && (e.ctrlKey || e.metaKey);
-    }
 
-    add(element) {
-        let marker = new GMapsMarker(this, element);
-        if (!marker.element) return;
-
-        this.bounds.extend(marker.position);
-        this.markers.push(marker);
-        this.markers = this.markers.sort((a, b) => {
-            let aVal = a.position.lat();
-            let bVal = b.position.lat();
-            if (aVal == bVal) {
-                aVal = a.position.lng();
-                bVal = b.position.lng();
+        if (this.element.find(':focus').length) {
+            if (e.keyCode == 27) { // Esc
+                this.closeAllMarkers();
             }
-            if (aVal > bVal) return -1;
-            if (aVal < bVal) return 1;
-            return 0;
-        });
-
-        this.markers.forEach((marker, index) => {
-            marker.index = index;
-        });
+        }
     }
 
     resize() {
@@ -130,5 +131,11 @@ module.exports = class GMaps {
         $window.off('keydown keyup', this.keys);
         $window.off('resize', this.resize);
         if (remove) this.element.remove();
+    }
+
+    closeAllMarkers() {
+        for (let i=0; i<this.markers.length; i++) {
+            this.markers[i].close();
+        }
     }
 };
