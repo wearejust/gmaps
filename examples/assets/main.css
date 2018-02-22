@@ -34,3 +34,13 @@ li:hover {
     height: 30rem;
     margin-bottom: 5rem;
 }
+
+.gmaps-cluster {
+    position: absolute;
+    background-color: #fff;
+    padding: 0.8rem;
+    border: 2px solid #333;
+    line-height: 0.7;
+    font-weight: bold;
+    border-radius: 50%;
+}

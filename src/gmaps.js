@@ -1,5 +1,5 @@
+require('gmaps-marker-clusterer');
 const $ = require('jquery'),
-    MarkerClusterer = require('node-js-marker-clusterer'),
     Marker = require('./marker');
 
 const $window = $(window);
@@ -16,6 +16,10 @@ const DEFAULT_MAP_OPTIONS = {
     mapTypeControl: false,
     streetViewControl: false,
     zoom: 17
+};
+
+const DEFAULT_CLUSTER_OPTIONS = {
+    cssClass: 'gmaps-cluster',
 };
 
 $.fn.gmaps = function(options, mapOptions, callback) {
@@ -110,7 +114,8 @@ global.GMaps = module.exports = class GMaps {
             let markers = this.markers.map(item => {
                 return item.marker;
             });
-            new MarkerClusterer(this.map, markers, this.options.cluster);
+            options = Object.assign(this.options.cluster === true ? {} : this.options.cluster, DEFAULT_CLUSTER_OPTIONS);
+            new MarkerClusterer(this.map, markers, options);
         }
 
         this.keys = this.keys.bind(this);

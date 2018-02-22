@@ -1112,6 +1112,10 @@ globals@^9.18.0:
   version "9.18.0"
   resolved "https://registry.yarnpkg.com/globals/-/globals-9.18.0.tgz#aa3896b3e69b487f17e31ed2143d69a8e30c2d8a"
 
+gmaps-marker-clusterer@^1.2.2:
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/gmaps-marker-clusterer/-/gmaps-marker-clusterer-1.2.2.tgz#b93a60fcaf43b64f0a230d888329a07acb0745e5"
+
 graceful-fs@^4.1.2:
   version "4.1.11"
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.1.11.tgz#0e8bdfe4d1ddb8854d64e04ea7c00e2a026e5658"
@@ -1542,10 +1546,6 @@ ms@2.0.0:
 nan@^2.3.0:
   version "2.8.0"
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.8.0.tgz#ed715f3fe9de02b57a5e6252d90a96675e1f085a"
-
-node-js-marker-clusterer@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/node-js-marker-clusterer/-/node-js-marker-clusterer-1.0.0.tgz#d09a1e963ebc5f6c162ece8510e9e680bba097a9"
 
 node-libs-browser@^2.0.0:
   version "2.1.0"

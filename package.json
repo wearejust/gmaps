@@ -3,7 +3,7 @@
         "watch": "node ./node_modules/webpack/bin/webpack.js --config webpack.config.js --progress --colors --watch"
     },
     "name": "@wearejust/gmaps",
-    "version": "2.1.0",
+    "version": "2.1.1",
     "description": "Google Maps wrapper",
     "main": "src/gmaps.js",
     "license": "MIT",
@@ -41,7 +41,7 @@
         "webpack-config": "^7.0.0"
     },
     "dependencies": {
-        "jquery": "^3.2.1",
-        "node-js-marker-clusterer": "^1.0.0"
+        "gmaps-marker-clusterer": "^1.2.2",
+        "jquery": "^3.2.1"
     }
 }
