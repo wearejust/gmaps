@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+    <head>
+        <title>GMaps - List</title>
+        <link href="assets/main.css" rel="stylesheet" type="text/css">
+    </head>
+    <body>
+        <h1>Anchors</h1>
+        <p>Each marker is an anchor. Includes support for target attribute.</p>
+
+        <ul class="gmaps">
+            <li data-gmaps-location="52.1585401,4.4944831">
+                <a href="https://wearejust.com/">Just - Same window</a>
+            </li>
+            <li data-gmaps-location="52.1589738,4.4924244">
+                <a href="https://wearejust.com/" target="_blank">Burcht - Blank</a>
+            </li>
+            <li data-gmaps-location="52.1661289,4.4773294">
+                <a href="https://wearejust.com/" target="_blank">LUMC - Blank</a>
+            </li>
+        </ul>
+
+        <script src="../dist/gmaps.js"></script>
+        <script>
+            let options = {
+                apiKey: 'AIzaSyCopZ8YCVh9jkKZcXqOLWBaJNuZ-SbSsRs', // Replace with your API key
+            };
+
+            let mapOptions = {};
+
+            new GMaps('.gmaps', options, mapOptions);
+        </script>
+    </body>
+</html>

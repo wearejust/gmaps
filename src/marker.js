@@ -1,4 +1,6 @@
-class GMapsMarker {
+const $ = require('jquery');
+
+module.exports = class Marker {
     constructor(gmaps, element) {
         if (!element.length) return;
         let lat, lng, location = element.attr('data-gmaps-location');
@@ -31,13 +33,16 @@ class GMapsMarker {
         this.marker.addListener('mouseover', this.mouseover.bind(this));
         this.marker.addListener('mouseout', this.mouseout.bind(this));
         this.marker.addListener('click', this.open.bind(this));
-        
-        let anchor = this.element.children('a'); 
+
+        let anchor = this.element.children('a');
         if (anchor.length) {
             this.link = anchor.attr('href');
             this.linkBlank = anchor.attr('target') == '_blank';
+            if (!options.title) {
+                this.marker.setTitle(anchor.text());
+            }
 
-        } else {
+        } else if (this.element.children().length) {
             let content = this.element.html();
             if (content && $.trim(content).length) {
                 options = Object.assign(this.gmaps.options.infowindows ? (this.gmaps.options.infowindows[this.element.attr('data-gmaps-infowindow')] || this.gmaps.options.infowindows['default'] || {}) : {}, {

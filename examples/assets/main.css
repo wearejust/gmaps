@@ -1,0 +1,36 @@
+body {
+    font-family: Helvetica, Arial, sans-serif;
+    margin: 1rem;
+}
+
+iframe {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 50rem;
+    border: none;
+}
+
+ul {
+    background-color: #eee;
+    margin: 0;
+    padding: 0.25rem;
+    margin-bottom: 0.5rem;
+}
+
+li {
+    background-color: #ddd;
+    display: inline-block;
+    cursor: pointer;
+    padding: 0.5rem;
+    margin: 0.25rem;
+}
+li:hover {
+    opacity: 0.5;
+}
+
+.gmaps {
+    background-color: #ccc;
+    height: 30rem;
+    margin-bottom: 5rem;
+}

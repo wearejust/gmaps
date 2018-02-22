@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+    <head>
+        <title>GMaps - List</title>
+        <link href="assets/main.css" rel="stylesheet" type="text/css">
+    </head>
+    <body>
+        <h1>Separate container</h1>
+        <p>This will replace the target container with a Google Maps instance, using the li's from the ul.</p>
+
+        <ul class="gmaps-container" data-gmaps-container=".gmaps">
+            <li data-gmaps-location="52.1585401,4.4944831">Just</li>
+            <li data-gmaps-location="52.1589738,4.4924244">Burcht</li>
+            <li data-gmaps-location="52.1661289,4.4773294">LUMC</li>
+        </ul>
+
+        <div class="gmaps"></div>
+
+        <script src="../dist/gmaps.js"></script>
+        <script>
+            let options = {
+                apiKey: 'AIzaSyCopZ8YCVh9jkKZcXqOLWBaJNuZ-SbSsRs', // Replace with your API key
+            };
+
+            let mapOptions = {};
+
+            new GMaps('.gmaps-container', options, mapOptions);
+        </script>
+    </body>
+</html>

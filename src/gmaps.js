@@ -1,5 +1,6 @@
 const $ = require('jquery'),
-    $window = $(window);
+    $window = $(window),
+    Marker = require('./marker');
 
 const DEFAULT_OPTIONS = {
     apiKey: null,
@@ -31,7 +32,7 @@ window.gmaps_load_callback = function() {
     }
 };
 
-module.exports = class GMaps {
+global.GMaps = module.exports = class GMaps {
     constructor(element = '.gmaps', options, mapOptions, callback) {
         this.element = $(element);
         if (!this.element.length || this.element.data('GMaps')) return;
@@ -84,7 +85,7 @@ module.exports = class GMaps {
 
         let i, marker;
         for (i=0; i<markers.length; i++) {
-            marker = new GMapsMarker(this, markers[i]);
+            marker = new Marker(this, markers[i]);
             if (!marker.element) continue;
             this.bounds.extend(marker.position);
             this.markers.push(marker);
