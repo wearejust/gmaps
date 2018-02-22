@@ -139,6 +139,13 @@ module.exports = function () {
             this.element.children('li').each(function (index, item) {
                 markers.push($(item));
             });
+
+            var replacement = $('<div></div>');
+            $.each(this.element[0].attributes, function (index, item) {
+                replacement.attr(item.name, item.value);
+            });
+            this.element.replaceWith(replacement);
+            this.element = replacement;
         }
 
         this.map = new google.maps.Map(this.element[0], this.mapOptions);
@@ -174,18 +181,56 @@ module.exports = function () {
         this.resize = this.resize.bind(this);
         this.zoom = this.zoom.bind(this);
 
+        this.tabIndex = -1;
+        this.element.attr('tabindex', '0');
+        this.element.on('focusin', this.focus.bind(this));
+        this.element.on('focusout', this.focus.bind(this));
+
         google.maps.event.addListenerOnce(this.map, 'idle', this.resize);
 
-        $window.on('keydown keyup', this.keys);
         $window.on('resize', this.resize);
         this.resize();
+    };
+
+    GMaps.prototype.focus = function focus(e) {
+        var _this = this;
+
+        clearTimeout(this.focusTimeout);
+        if (e.type == 'focusin') {
+            $window.on('keydown keyup', this.keys);
+        } else {
+            $window.off('keydown keyup', this.keys);
+            this.focusTimeout = setTimeout(function () {
+                _this.tabIndex = -1;
+                for (var i = 0; i < _this.markers.length; i++) {
+                    _this.markers[i].highlight(false, false);
+                }
+            }, 100);
+        }
     };
 
     GMaps.prototype.keys = function keys(e) {
         this.metaKey = e.type == 'keydown' && (e.ctrlKey || e.metaKey);
 
-        if (this.element.find(':focus').length) {
-            if (e.keyCode == 27) {
+        if (e.type == 'keydown') {
+            if (e.keyCode == 9) {
+                // Tab
+                this.tabIndex = Math.max(-1, Math.min(this.markers.length, this.tabIndex + (e.shiftKey ? -1 : 1)));
+                var i = void 0,
+                    active = false;
+                if (this.tabIndex >= 0 && this.tabIndex < this.markers.length) {
+                    e.preventDefault();
+                    active = true;
+                }
+                for (i = 0; i < this.markers.length; i++) {
+                    this.markers[i].highlight(i == this.tabIndex, active);
+                }
+            } else if (e.keyCode == 13 || e.keyCode == 32) {
+                // Space or Enter
+                if (this.tabIndex >= 0 && this.tabIndex < this.markers.length) {
+                    this.markers[this.tabIndex].open();
+                }
+            } else if (e.keyCode == 27) {
                 // Esc
                 this.closeAllMarkers();
             }
@@ -312,6 +357,13 @@ var GMapsMarker = function () {
     GMapsMarker.prototype.mouseout = function mouseout() {
         this.marker.setOptions({
             zIndex: this.index
+        });
+    };
+
+    GMapsMarker.prototype.highlight = function highlight(toggle, active) {
+        this.marker.setOptions({
+            opacity: toggle || !active ? 1 : 0.5,
+            zIndex: toggle && active ? 9999999 : this.index
         });
     };
 

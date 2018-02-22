@@ -60,6 +60,13 @@ class GMapsMarker {
         });
     }
 
+    highlight(toggle, active) {
+        this.marker.setOptions({
+            opacity: (toggle || !active) ? 1 : 0.5,
+            zIndex: (toggle && active) ? 9999999 : this.index
+        });
+    }
+
     open() {
         if (this.link) {
             if (this.gmaps.metaKey || this.linkBlank) {
