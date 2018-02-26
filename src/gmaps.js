@@ -115,7 +115,7 @@ global.GMaps = module.exports = class GMaps {
                 return item.marker;
             });
             options = Object.assign(DEFAULT_CLUSTER_OPTIONS, this.options.cluster === true ? {} : this.options.cluster);
-            new MarkerClusterer(this.map, markers, options);
+            this.clusterer = new MarkerClusterer(this.map, markers, options);
         }
 
         if (this.options.search) {

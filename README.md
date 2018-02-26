@@ -38,14 +38,14 @@ See **examples** folder for more details
 | Key | Value | Default | Description |
 |---|---|---|---|
 | apiKey | string | null | Your [Google Maps API key](https://developers.google.com/maps/documentation/javascript/get-api-key) |
-| cluster | boolean, object | null | Enable [Marker Clustering](https://developers.google.com/maps/documentation/javascript/marker-clustering) |
+| cluster | boolean, object | null | Enable [Marker Clustering](https://developers.google.com/maps/documentation/javascript/marker-clustering). See used [package repository](https://github.com/gmaps-marker-clusterer/gmaps-marker-clusterer/blob/master/src/markerclusterer.js#L41) for options. |
 | fit | boolean | true | Fit all markers on screen |
 | fitZoom | integer | -1 | Amount to zoom extra after `fit` |
 | fitZoomMin | integer | 0 | Minimum zoom after `fitZoom` |
 | fitZoomMax | integer | 20 | Maximum zoom after `fitZoom` |
 | infowindow | object | null | Object with custom infowindow options. Use the default key to apply as default. |
 | markers | object | null | Object with keys of custom marker options. Use the default key to apply as default. |
-| search | DOM, string, object | null | Search input field to find places on the map. |
+| search | DOM, string, object | null | Search input field to find places on the map |
 
 ### Map Options
 Default Google Maps MapOptions. For more see https://developers.google.com/maps/documentation/javascript/reference#MapOptions
