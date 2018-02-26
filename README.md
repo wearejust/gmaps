@@ -43,8 +43,9 @@ See **examples** folder for more details
 | fitZoom | integer | -1 | Amount to zoom extra after `fit` |
 | fitZoomMin | integer | 0 | Minimum zoom after `fitZoom` |
 | fitZoomMax | integer | 20 | Maximum zoom after `fitZoom` |
-| markers | object | null | Object with keys of custom marker options. Use the default key to apply as default. |
 | infowindow | object | null | Object with custom infowindow options. Use the default key to apply as default. |
+| markers | object | null | Object with keys of custom marker options. Use the default key to apply as default. |
+| search | DOM, string, object | null | Search input field to find places on the map. |
 
 ### Map Options
 Default Google Maps MapOptions. For more see https://developers.google.com/maps/documentation/javascript/reference#MapOptions

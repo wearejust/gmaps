@@ -1,0 +1,27 @@
+<!doctype html>
+<html>
+    <head>
+        <title>GMaps - Search</title>
+        <link href="assets/main.css" rel="stylesheet" type="text/css">
+    </head>
+    <body>
+        <h1>Search</h1>
+        <p>Use an input field to search places</p>
+
+        <input type="search" class="gmaps-search" placeholder="Search">
+        <div class="gmaps" data-gmaps-location="52.1585401,4.4944831"></div>
+
+        <script src="../dist/gmaps.js"></script>
+        <script>
+            let options = {
+                apiKey: 'AIzaSyCopZ8YCVh9jkKZcXqOLWBaJNuZ-SbSsRs', // Replace with your API key
+                fit: false,
+                search: '.gmaps-search',
+            };
+
+            let mapOptions = {};
+
+            new GMaps('.gmaps', options, mapOptions);
+        </script>
+    </body>
+</html>

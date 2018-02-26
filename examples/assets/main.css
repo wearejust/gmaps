@@ -44,3 +44,13 @@ li:hover {
     font-weight: bold;
     border-radius: 50%;
 }
+
+.gmaps-search {
+    margin-bottom: 0.5rem;
+    width: 20rem;
+    max-width: 100%;
+}
+
+.pac-logo:after {
+    display: none!important;
+}

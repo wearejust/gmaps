@@ -57,7 +57,7 @@ global.GMaps = module.exports = class GMaps {
         if (!window.google) {
             queue.push(this);
             if (queue.length === 1) {
-                $.getScript(`https://maps.googleapis.com/maps/api/js?v=3&callback=gmaps_load_callback&key=${this.options.apiKey}`);
+                $.getScript(`https://maps.googleapis.com/maps/api/js?v=3&libraries=places&callback=gmaps_load_callback&key=${this.options.apiKey}`);
             }
 
         } else {
@@ -116,6 +116,11 @@ global.GMaps = module.exports = class GMaps {
             });
             options = Object.assign(this.options.cluster === true ? {} : this.options.cluster, DEFAULT_CLUSTER_OPTIONS);
             new MarkerClusterer(this.map, markers, options);
+        }
+
+        if (this.options.search) {
+            this.searchBox = new google.maps.places.SearchBox($(this.options.search)[0]);
+            this.searchBox.addListener('places_changed', this.search.bind(this));
         }
 
         this.keys = this.keys.bind(this);
@@ -180,8 +185,8 @@ global.GMaps = module.exports = class GMaps {
     }
 
     resize() {
-        google.maps.event.addListenerOnce(this.map, 'zoom_changed', this.zoom);
         if (this.options.fit) {
+            google.maps.event.addListenerOnce(this.map, 'zoom_changed', this.zoom);
             this.map.fitBounds(this.bounds);
         } else {
             this.map.setCenter(this.bounds.getCenter());
@@ -217,5 +222,11 @@ global.GMaps = module.exports = class GMaps {
         for (let i=0; i<this.markers.length; i++) {
             this.markers[i].close();
         }
+    }
+
+    search() {
+        let places = this.searchBox.getPlaces();
+        if (!places.length || !places[0].geometry) this.resize();
+        this.map.fitBounds(places[0].geometry.viewport);
     }
 };
