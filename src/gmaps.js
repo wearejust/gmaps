@@ -114,7 +114,7 @@ global.GMaps = module.exports = class GMaps {
             let markers = this.markers.map(item => {
                 return item.marker;
             });
-            options = Object.assign(this.options.cluster === true ? {} : this.options.cluster, DEFAULT_CLUSTER_OPTIONS);
+            options = Object.assign(DEFAULT_CLUSTER_OPTIONS, this.options.cluster === true ? {} : this.options.cluster);
             new MarkerClusterer(this.map, markers, options);
         }
 

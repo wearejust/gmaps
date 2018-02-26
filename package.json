@@ -3,7 +3,7 @@
         "watch": "node ./node_modules/webpack/bin/webpack.js --config webpack.config.js --progress --colors --watch"
     },
     "name": "@wearejust/gmaps",
-    "version": "2.2.1",
+    "version": "2.2.2",
     "description": "Google Maps wrapper",
     "main": "src/gmaps.js",
     "license": "MIT",
