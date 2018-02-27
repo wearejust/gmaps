@@ -1,0 +1,101 @@
+<!doctype html>
+<html>
+    <head>
+        <title>GMaps - Overlay</title>
+        <link href="assets/main.css" rel="stylesheet" type="text/css">
+        <style>
+            .gmaps-overlay-pane {
+                height: 100%;
+                transform: none !important;
+            }
+            .gmaps-overlay-pane:before {
+                content: "";
+                position: absolute;
+                background-color: rgba(0,0,0,0.5);
+                width: 100%;
+                height: 100%;
+            }
+            .gmaps-overlay-pane > div:last-child {
+                height: 100%;
+            }
+
+            .gmaps-overlay {
+                cursor: auto;
+                background-color: #fff;
+                position: absolute;
+                width: 200px;
+                padding: 10px;
+                transform: translate(-50%, calc(-100% - 20px));
+            }
+            .gmaps-overlay:after {
+                content: "";
+                width: 0;
+                height: 0;
+                border-left: 20px solid transparent;
+                border-right: 20px solid transparent;
+                border-top: 20px solid #fff;
+                position: absolute;
+                left: 50%;
+                top: calc(100% - 1px);
+                transform: translateX(-50%);
+                z-index: -1;
+            }
+
+            .gmaps-overlay-close {
+                position: absolute;
+                right: 5px;
+                top: 5px;
+                cursor: pointer;
+            }
+            .gmaps-overlay-close:after {
+                content: "×";
+            }
+
+            .gmaps-overlay-lumc {
+                left: 50% !important;
+                top: 50% !important;
+                width: 50%;
+                height: 50%;
+                transform: translate(-50%, -50%);
+                padding: 30px;
+            }
+            .gmaps-overlay-lumc:after {
+                display: none;
+            }
+            .gmaps-overlay-lumc h3 {
+                font-size: 24px;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Overlay</h1>
+        <p>Use the content of the li's as Overlays. Overlays are custom Info Windows.</p>
+
+        <ul class="gmaps">
+            <li data-gmaps-location="52.1585401,4.4944831" title="Just">
+                <h3>Just</h3>
+                <p>Uses <b>data-gmaps-location</b> and <b>title</b> attributes.</p>
+            </li>
+            <li data-gmaps-lat="52.1589738" data-gmaps-lng="4.4924244" data-gmaps-title="Burcht">
+                <h3>Burcht</h3>
+                <p>Uses separate <b>data-gmaps-lat</b> and <b>data-gmaps-lng</b> and <b>data-gmaps-title</b> attributes.</p>
+            </li>
+            <li data-gmaps-latitude="52.1661289" data-gmaps-longitude="4.4773294" data-gmaps-overlay="gmaps-overlay gmaps-overlay-lumc">
+                <h3 class="gmaps-title">LUMC</h3>
+                <p>Uses separate <b>data-gmaps-latitude</b> and <b>data-gmaps-longitude</b> attributes and <b>gmaps-title</b> class on the header.</p>
+            </li>
+        </ul>
+
+        <script src="../dist/gmaps.js"></script>
+        <script>
+            let options = {
+                apiKey: 'AIzaSyCopZ8YCVh9jkKZcXqOLWBaJNuZ-SbSsRs', // Replace with your API key
+                overlays: 'gmaps-overlay',
+            };
+
+            let mapOptions = {};
+
+            new GMaps('.gmaps', options, mapOptions);
+        </script>
+    </body>
+</html>

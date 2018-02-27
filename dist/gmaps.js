@@ -12055,7 +12055,8 @@ module.exports = g;
 /* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const $ = __webpack_require__(0);
+const $ = __webpack_require__(0),
+    Content = __webpack_require__(5);
 
 module.exports = class Marker {
     constructor(gmaps, element) {
@@ -12066,8 +12067,8 @@ module.exports = class Marker {
         lng = location ? location[1] : (element.attr('data-gmaps-lng') || element.attr('data-gmaps-longitude'));
         if (!lat || !lng) return;
 
-        this.element = element;
         this.gmaps = gmaps;
+        this.element = element;
         this.position = new google.maps.LatLng(lat, lng);
         this.element.data('GMapsMarker', this);
 
@@ -12102,12 +12103,7 @@ module.exports = class Marker {
         } else if (this.element.children().length) {
             let content = this.element.html();
             if (content && $.trim(content).length) {
-                options = Object.assign(this.gmaps.options.infowindows ? (this.gmaps.options.infowindows[this.element.attr('data-gmaps-infowindow')] || this.gmaps.options.infowindows['default'] || {}) : {}, {
-                    content: content,
-                    position: this.position,
-                });
-                this.infowindow = new google.maps.InfoWindow(options);
-                this.infowindow.addListener('closeclick', this.close.bind(this));
+                this.content = new Content(this.gmaps, this, content);
             }
         }
     }
@@ -12138,20 +12134,20 @@ module.exports = class Marker {
                 window.location = this.link;
             }
 
-        } else if (this.infowindow) {
+        } else if (this.content) {
             this.gmaps.closeAllMarkers();
             this.marker.setVisible(false);
-            this.infowindow.open(this.gmaps.map);
+            this.content.open();
         }
     }
 
     close() {
-        if (this.infowindow) {
+        if (this.content) {
             this.marker.setVisible(true);
-            this.infowindow.close();
+            this.content.close();
         }
     }
-}
+};
 
 /***/ }),
 /* 4 */
@@ -12390,6 +12386,79 @@ global.GMaps = module.exports = class GMaps {
     }
 };
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+const $ = __webpack_require__(0);
+
+module.exports = class Content {
+    constructor(gmaps, marker, content) {
+        this.gmaps = gmaps;
+        this.marker = marker;
+        this.content = content;
+
+        let overlay = this.marker.element.attr('data-gmaps-overlay') || this.gmaps.options.overlays;
+        if (overlay) {
+            this.overlay = new google.maps.OverlayView();
+
+            this.overlay.element = $(`<div class="${overlay}">${this.content}</div>`);
+
+            let btn = $('<button type="button" class="gmaps-overlay-close"></button>');
+            this.overlay.element.prepend(btn);
+            btn.on('click', this.marker.close.bind(this.marker));
+
+            this.overlay.onAdd = this.overlayAdd.bind(this);
+            this.overlay.draw = this.overlayDraw.bind(this);
+            this.overlay.remove = this.overlayRemove.bind(this);
+
+        } else {
+            let options = Object.assign(this.gmaps.options.infowindows ? this.gmaps.options.infowindows[this.marker.element.attr('data-gmaps-infowindow') || 'default'] || {} : {}, {
+                content: this.content,
+                position: this.marker.position,
+            });
+            this.infowindow = new google.maps.InfoWindow(options);
+            this.infowindow.addListener('closeclick', this.close.bind(this));
+        }
+    }
+
+    overlayAdd() {
+        let pane = $(this.overlay.getPanes().floatPane);
+        pane.parent().addClass('gmaps-overlay-pane');
+        pane.append(this.overlay.element);
+    }
+
+    overlayDraw() {
+        let projection = this.overlay.getProjection();
+        let position = projection.fromLatLngToDivPixel(this.marker.position);
+        this.overlay.element.css({
+            left: position.x + 'px',
+            top: position.y + 'px',
+        });
+    }
+
+    overlayRemove() {
+        this.overlay.element.detach();
+        $('.gmaps-overlay-pane').removeClass('gmaps-overlay-pane');
+    }
+
+    open() {
+        if (this.overlay) {
+            this.overlay.setMap(this.gmaps.map);
+        } else {
+            this.infowindow.open(this.gmaps.map);
+        }
+    }
+
+    close() {
+        if (this.overlay) {
+            this.overlay.setMap(null);
+        } else {
+            this.infowindow.close();
+        }
+    }
+};
 
 /***/ })
 /******/ ]);

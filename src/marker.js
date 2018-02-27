@@ -1,4 +1,5 @@
-const $ = require('jquery');
+const $ = require('jquery'),
+    Content = require('./content');
 
 module.exports = class Marker {
     constructor(gmaps, element) {
@@ -9,8 +10,8 @@ module.exports = class Marker {
         lng = location ? location[1] : (element.attr('data-gmaps-lng') || element.attr('data-gmaps-longitude'));
         if (!lat || !lng) return;
 
-        this.element = element;
         this.gmaps = gmaps;
+        this.element = element;
         this.position = new google.maps.LatLng(lat, lng);
         this.element.data('GMapsMarker', this);
 
@@ -45,12 +46,7 @@ module.exports = class Marker {
         } else if (this.element.children().length) {
             let content = this.element.html();
             if (content && $.trim(content).length) {
-                options = Object.assign(this.gmaps.options.infowindows ? (this.gmaps.options.infowindows[this.element.attr('data-gmaps-infowindow')] || this.gmaps.options.infowindows['default'] || {}) : {}, {
-                    content: content,
-                    position: this.position,
-                });
-                this.infowindow = new google.maps.InfoWindow(options);
-                this.infowindow.addListener('closeclick', this.close.bind(this));
+                this.content = new Content(this.gmaps, this, content);
             }
         }
     }
@@ -81,17 +77,17 @@ module.exports = class Marker {
                 window.location = this.link;
             }
 
-        } else if (this.infowindow) {
+        } else if (this.content) {
             this.gmaps.closeAllMarkers();
             this.marker.setVisible(false);
-            this.infowindow.open(this.gmaps.map);
+            this.content.open();
         }
     }
 
     close() {
-        if (this.infowindow) {
+        if (this.content) {
             this.marker.setVisible(true);
-            this.infowindow.close();
+            this.content.close();
         }
     }
-}
+};
