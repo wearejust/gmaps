@@ -12273,7 +12273,7 @@ global.GMaps = module.exports = class GMaps {
             let markers = this.markers.map(item => {
                 return item.marker;
             });
-            options = Object.assign(DEFAULT_CLUSTER_OPTIONS, this.options.cluster === true ? {} : this.options.cluster);
+            let options = Object.assign(DEFAULT_CLUSTER_OPTIONS, this.options.cluster === true ? {} : this.options.cluster);
             this.clusterer = new MarkerClusterer(this.map, markers, options);
         }
 
