@@ -1,29 +1,22 @@
 <!doctype html>
 <html>
     <head>
-        <title>GMaps - Overlay</title>
+        <title>GMaps - Modal</title>
         <link href="assets/main.css" rel="stylesheet" type="text/css">
         <style>
-            .gmaps-overlay {
-                cursor: auto;
-                background-color: #fff;
-                position: absolute;
-                width: 200px;
-                padding: 10px;
-                transform: translate(-50%, calc(-100% - 20px));
+            .gmaps-overlay-pane {
+                height: 100%;
+                transform: none !important;
             }
-            .gmaps-overlay:after {
+            .gmaps-overlay-pane:before {
                 content: "";
-                width: 0;
-                height: 0;
-                border-left: 20px solid transparent;
-                border-right: 20px solid transparent;
-                border-top: 20px solid #fff;
                 position: absolute;
-                left: 50%;
-                top: calc(100% - 1px);
-                transform: translateX(-50%);
-                z-index: -1;
+                background-color: rgba(0,0,0,0.5);
+                width: 100%;
+                height: 100%;
+            }
+            .gmaps-overlay-pane > div:last-child {
+                height: 100%;
             }
 
             .gmaps-overlay-close {
@@ -36,20 +29,26 @@
                 content: "×";
             }
 
-            .gmaps-overlay-lumc {
-                background-color: #000;
+            .gmaps-modal {
+                cursor: auto;
+                background-color: #fff;
+                position: absolute;
+                left: 50% !important;
+                top: 50% !important;
+                width: 50%;
+                height: 50%;
+                padding: 30px;
+                transform: translate(-50%, -50%);
             }
-            .gmaps-overlay-lumc h3, .gmaps-overlay-lumc p {
-                color: #fff;
-            }
-            .gmaps-overlay-lumc:after {
-                border-top-color: #000;
+
+            .gmaps-modal {
+                font-size: 1.25rem;
             }
         </style>
     </head>
     <body>
-        <h1>Overlay</h1>
-        <p>Use the content of the li's as Overlays. Overlays are custom Info Windows.</p>
+        <h1>Modal</h1>
+        <p>Style Overlays as a Modal.</p>
 
         <ul class="gmaps">
             <li data-gmaps-location="52.1585401,4.4944831" title="Just">
@@ -60,7 +59,7 @@
                 <h3>Burcht</h3>
                 <p>Uses separate <b>data-gmaps-lat</b> and <b>data-gmaps-lng</b> and <b>data-gmaps-title</b> attributes.</p>
             </li>
-            <li data-gmaps-latitude="52.1661289" data-gmaps-longitude="4.4773294" data-gmaps-overlay="gmaps-overlay gmaps-overlay-lumc">
+            <li data-gmaps-latitude="52.1661289" data-gmaps-longitude="4.4773294">
                 <h3 class="gmaps-title">LUMC</h3>
                 <p>Uses separate <b>data-gmaps-latitude</b> and <b>data-gmaps-longitude</b> attributes and <b>gmaps-title</b> class on the header.</p>
             </li>
@@ -70,7 +69,7 @@
         <script>
             let options = {
                 apiKey: 'AIzaSyCopZ8YCVh9jkKZcXqOLWBaJNuZ-SbSsRs', // Replace with your API key
-                overlays: 'gmaps-overlay',
+                overlays: 'gmaps-modal',
             };
 
             let mapOptions = {};
