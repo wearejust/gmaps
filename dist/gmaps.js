@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 4);
+/******/ 	return __webpack_require__(__webpack_require__.s = 5);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -12056,7 +12056,7 @@ module.exports = g;
 /***/ (function(module, exports, __webpack_require__) {
 
 const $ = __webpack_require__(0),
-    Content = __webpack_require__(5);
+    Content = __webpack_require__(4);
 
 module.exports = class Marker {
     constructor(gmaps, element) {
@@ -12151,6 +12151,79 @@ module.exports = class Marker {
 
 /***/ }),
 /* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+const $ = __webpack_require__(0);
+
+module.exports = class Content {
+    constructor(gmaps, marker, content) {
+        this.gmaps = gmaps;
+        this.marker = marker;
+        this.content = content;
+
+        let overlay = this.marker.element.attr('data-gmaps-overlay') || this.gmaps.options.overlays;
+        if (overlay) {
+            this.overlay = new google.maps.OverlayView();
+
+            this.overlay.element = $(`<div class="${overlay}">${this.content}</div>`);
+
+            let btn = $('<button type="button" class="gmaps-overlay-close"></button>');
+            this.overlay.element.prepend(btn);
+            btn.on('click', this.marker.close.bind(this.marker));
+
+            this.overlay.onAdd = this.overlayAdd.bind(this);
+            this.overlay.draw = this.overlayDraw.bind(this);
+            this.overlay.remove = this.overlayRemove.bind(this);
+
+        } else {
+            let options = Object.assign(this.gmaps.options.infowindows ? this.gmaps.options.infowindows[this.marker.element.attr('data-gmaps-infowindow') || 'default'] || {} : {}, {
+                content: this.content,
+                position: this.marker.position,
+            });
+            this.infowindow = new google.maps.InfoWindow(options);
+            this.infowindow.addListener('closeclick', this.close.bind(this));
+        }
+    }
+
+    overlayAdd() {
+        let pane = $(this.overlay.getPanes().floatPane);
+        pane.parent().addClass('gmaps-overlay-pane');
+        pane.append(this.overlay.element);
+    }
+
+    overlayDraw() {
+        let projection = this.overlay.getProjection();
+        let position = projection.fromLatLngToDivPixel(this.marker.position);
+        this.overlay.element.css({
+            left: position.x + 'px',
+            top: position.y + 'px',
+        });
+    }
+
+    overlayRemove() {
+        this.overlay.element.detach();
+        $('.gmaps-overlay-pane').removeClass('gmaps-overlay-pane');
+    }
+
+    open() {
+        if (this.overlay) {
+            this.overlay.setMap(this.gmaps.map);
+        } else {
+            this.infowindow.open(this.gmaps.map);
+        }
+    }
+
+    close() {
+        if (this.overlay) {
+            this.overlay.setMap(null);
+        } else {
+            this.infowindow.close();
+        }
+    }
+};
+
+/***/ }),
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {__webpack_require__(1);
@@ -12381,84 +12454,13 @@ global.GMaps = module.exports = class GMaps {
 
     search() {
         let places = this.searchBox.getPlaces();
-        if (!places.length || !places[0].geometry) this.resize();
-        this.map.fitBounds(places[0].geometry.viewport);
+        if (!places || !places.length) this.resize();
+        let place = places[0];
+        if (!place.geometry || !place.geometry.viewport) this.resize();
+        this.map.fitBounds(place.geometry.viewport);
     }
 };
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
-
-/***/ }),
-/* 5 */
-/***/ (function(module, exports, __webpack_require__) {
-
-const $ = __webpack_require__(0);
-
-module.exports = class Content {
-    constructor(gmaps, marker, content) {
-        this.gmaps = gmaps;
-        this.marker = marker;
-        this.content = content;
-
-        let overlay = this.marker.element.attr('data-gmaps-overlay') || this.gmaps.options.overlays;
-        if (overlay) {
-            this.overlay = new google.maps.OverlayView();
-
-            this.overlay.element = $(`<div class="${overlay}">${this.content}</div>`);
-
-            let btn = $('<button type="button" class="gmaps-overlay-close"></button>');
-            this.overlay.element.prepend(btn);
-            btn.on('click', this.marker.close.bind(this.marker));
-
-            this.overlay.onAdd = this.overlayAdd.bind(this);
-            this.overlay.draw = this.overlayDraw.bind(this);
-            this.overlay.remove = this.overlayRemove.bind(this);
-
-        } else {
-            let options = Object.assign(this.gmaps.options.infowindows ? this.gmaps.options.infowindows[this.marker.element.attr('data-gmaps-infowindow') || 'default'] || {} : {}, {
-                content: this.content,
-                position: this.marker.position,
-            });
-            this.infowindow = new google.maps.InfoWindow(options);
-            this.infowindow.addListener('closeclick', this.close.bind(this));
-        }
-    }
-
-    overlayAdd() {
-        let pane = $(this.overlay.getPanes().floatPane);
-        pane.parent().addClass('gmaps-overlay-pane');
-        pane.append(this.overlay.element);
-    }
-
-    overlayDraw() {
-        let projection = this.overlay.getProjection();
-        let position = projection.fromLatLngToDivPixel(this.marker.position);
-        this.overlay.element.css({
-            left: position.x + 'px',
-            top: position.y + 'px',
-        });
-    }
-
-    overlayRemove() {
-        this.overlay.element.detach();
-        $('.gmaps-overlay-pane').removeClass('gmaps-overlay-pane');
-    }
-
-    open() {
-        if (this.overlay) {
-            this.overlay.setMap(this.gmaps.map);
-        } else {
-            this.infowindow.open(this.gmaps.map);
-        }
-    }
-
-    close() {
-        if (this.overlay) {
-            this.overlay.setMap(null);
-        } else {
-            this.infowindow.close();
-        }
-    }
-};
 
 /***/ })
 /******/ ]);

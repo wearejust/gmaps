@@ -226,7 +226,9 @@ global.GMaps = module.exports = class GMaps {
 
     search() {
         let places = this.searchBox.getPlaces();
-        if (!places.length || !places[0].geometry) this.resize();
-        this.map.fitBounds(places[0].geometry.viewport);
+        if (!places || !places.length) this.resize();
+        let place = places[0];
+        if (!place.geometry || !place.geometry.viewport) this.resize();
+        this.map.fitBounds(place.geometry.viewport);
     }
 };
