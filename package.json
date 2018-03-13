@@ -1,11 +1,11 @@
 {
     "scripts": {
-        "watch": "node ./node_modules/webpack/bin/webpack.js --config webpack.config.js --progress --colors --watch"
+        "watch": "node_modules/.bin/webpack --config webpack.config.js --progress --colors --watch"
     },
     "name": "@wearejust/gmaps",
-    "version": "2.3.2",
+    "version": "2.4.0",
     "description": "Google Maps wrapper",
-    "main": "src/gmaps.js",
+    "main": "dist/gmaps.js",
     "license": "MIT",
     "files": [
         "dist",
@@ -33,12 +33,11 @@
         "url": "https://github.com/wearejust/gmaps"
     },
     "devDependencies": {
-        "babel-core": "^6.24.0",
-        "babel-loader": "^6.4.1",
+        "babel-core": "^6.26.0",
+        "babel-loader": "^7.1.4",
         "babel-preset-es2015-ie": "^6.7.0",
-        "babel-register": "^6.24.1",
-        "webpack": "^2.4.1",
-        "webpack-config": "^7.0.0"
+        "webpack": "^4.1.1",
+        "webpack-cli": "^2.0.11"
     },
     "dependencies": {
         "gmaps-marker-clusterer": "^1.2.2",

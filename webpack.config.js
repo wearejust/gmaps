@@ -1,11 +1,47 @@
-module.exports = {
+const config = {
+    devtool: false,
+    mode: 'production',
     entry: './src/gmaps.js',
     output: {
         path: __dirname + '/dist',
-        filename: 'gmaps.js'
+        library: 'GMaps',
+        libraryTarget: 'umd',
     },
-    resolve: {
-        extensions: ['.js', '.jsx'],
-        modules: ['node_modules']
+    module: {
+        rules: [
+            {
+                test: /\.js$/,
+                exclude: /node_modules/,
+                use: {
+                    loader: 'babel-loader',
+                    options: {
+                        presets: [
+                            'es2015-ie',
+                        ],
+                    },
+                },
+            },
+        ],
     },
 };
+
+module.exports = [
+    {
+        ...config,
+        externals: [
+            'gmaps-marker-clusterer',
+            'jquery',
+        ],
+        output: {
+            ...config.output,
+            filename: 'gmaps.js',
+        }
+    },
+    {
+        ...config,
+        output: {
+            ...config.output,
+            filename: 'gmaps.bundle.js',
+        }
+    }
+];

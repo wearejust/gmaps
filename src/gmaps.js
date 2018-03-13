@@ -64,7 +64,7 @@ global.GMaps = module.exports = class GMaps {
             this.init();
         }
     }
-    
+
     init() {
         let container = this.element.attr('data-gmaps-container');
         let markers = [this.element];
