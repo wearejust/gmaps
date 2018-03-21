@@ -35,18 +35,20 @@ module.exports = class Marker {
         this.marker.addListener('mouseout', this.mouseout.bind(this));
         this.marker.addListener('click', this.open.bind(this));
 
-        let anchor = this.element.children('a');
-        if (anchor.length) {
-            this.link = anchor.attr('href');
-            this.linkBlank = anchor.attr('target') == '_blank';
-            if (!options.title) {
-                this.marker.setTitle(anchor.text());
-            }
-
-        } else if (this.element.children().length) {
+        if (this.element.children().length) {
             let content = this.element.html();
             if (content && $.trim(content).length) {
                 this.content = new Content(this.gmaps, this, content);
+
+            } else {
+                let anchor = this.element.children('a');
+                if (anchor.length) {
+                    this.link = anchor.attr('href');
+                    this.linkBlank = anchor.attr('target') == '_blank';
+                    if (!options.title) {
+                        this.marker.setTitle(anchor.text());
+                    }
+                }
             }
         }
     }
