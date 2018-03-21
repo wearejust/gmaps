@@ -73,17 +73,29 @@ global.GMaps = module.exports = class GMaps {
                 markers.push($(item));
             });
 
-            if (!container) {
+            if (container) {
+                container = $(`[data-gmaps-id="${container}"],${container}`);
+
+            } else {
                 let replacement = $(`<div></div>`);
                 $.each(this.element[0].attributes, (index, item) => {
                     replacement.attr(item.name, item.value);
                 });
+
+                let e, c, h, events = this.element[0].events || $.data(this.element[0], 'events') || $._data(this.element[0], 'events');
+                for (e in events) {
+                    for (c=0; c<events[e].length; c++) {
+                        h = events[e][c];
+                        replacement.on(h.type, h.handler);
+                    }
+                }
+
                 this.element.replaceWith(replacement);
                 this.element = replacement;
             }
         }
 
-        container = $(container || this.element);
+        if (!container || !container.length) container = this.element;
         this.map = new google.maps.Map(container[0], this.mapOptions);
 
         this.markers = [];
@@ -137,6 +149,8 @@ global.GMaps = module.exports = class GMaps {
         $window.on('resize', this.resize);
         this.resize();
 
+        this.element.trigger('ready', this);
+
         if (typeof this.callback == 'function') {
             this.callback(this);
         }
@@ -146,6 +160,7 @@ global.GMaps = module.exports = class GMaps {
         clearTimeout(this.focusTimeout);
         if (e.type == 'focusin') {
             $window.on('keydown keyup', this.keys);
+
         } else {
             $window.off('keydown keyup', this.keys);
             this.focusTimeout = setTimeout(() => {
@@ -208,6 +223,7 @@ global.GMaps = module.exports = class GMaps {
         }
 
         if (n != z) this.map.setZoom(n);
+        this.element.trigger('zoom', this);
     }
 
     destroy(remove = true) {
@@ -216,6 +232,7 @@ global.GMaps = module.exports = class GMaps {
         $window.off('keydown keyup', this.keys);
         $window.off('resize', this.resize);
         if (remove) this.element.remove();
+        this.element.trigger('destroy', this);
     }
 
     closeAllMarkers() {
@@ -230,5 +247,6 @@ global.GMaps = module.exports = class GMaps {
         let place = places[0];
         if (!place.geometry || !place.geometry.viewport) this.resize();
         this.map.fitBounds(place.geometry.viewport);
+        this.element.trigger('search', this);
     }
 };

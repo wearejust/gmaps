@@ -55,6 +55,32 @@ Default Google Maps MapOptions. For more see https://developers.google.com/maps/
 | mapTypeControl | false |
 | streetViewControl | false |
 | zoom | 17 |
-    
 
+### Events
+The jQuery element can have events bound to it.
+ 
+ ```javascript
+ let gmaps = $('.gmaps').gmaps(options, mapOptions, callback);
+ 
+gmaps.on('ready', function(e, g) {
+   // e is the event
+   // g refers to the GMaps object
+ });
+ ````
 
+| Event | Description |
+|---|---|
+| content_close | After closing the Content of a Marker |
+| content_open | After opening the Content of a Marker |
+| destroy | After destroy() is called |
+| marker_close | After closing a Marker |
+| marker_highlight | After tabbing through Markers |
+| marker_mouseout | After hovering out a Marker |
+| marker_mouseover | After hovering over a Marker |
+| marker_open | After opening a Marker |
+| overlay_add | After adding the custom Overlay of a Marker to the map |
+| overlay_draw | After drawing the custom Overlay of a Marker in the map |
+| overlay_remove | After removing the custom Overlay of a Marker from the map |
+| ready | After initialization |
+| search | After searching |
+| zoom | After zooming in or out |

@@ -57,11 +57,13 @@ module.exports = class Marker {
         this.marker.setOptions({
             zIndex: 9999999,
         });
+        this.gmaps.element.trigger('marker_mouseover', this);
     }
     mouseout() {
         this.marker.setOptions({
             zIndex: this.index,
         });
+        this.gmaps.element.trigger('marker_mouseout', this);
     }
 
     highlight(toggle, active) {
@@ -69,6 +71,7 @@ module.exports = class Marker {
             opacity: (toggle || !active) ? 1 : 0.5,
             zIndex: (toggle && active) ? 9999999 : this.index
         });
+        this.gmaps.element.trigger('marker_highlight', this);
     }
 
     open() {
@@ -79,17 +82,19 @@ module.exports = class Marker {
                 window.location = this.link;
             }
 
-        } else if (this.content) {
+        } else if (this.content && this.marker.visible) {
             this.gmaps.closeAllMarkers();
             this.marker.setVisible(false);
             this.content.open();
+            this.gmaps.element.trigger('marker_open', this);
         }
     }
 
     close() {
-        if (this.content) {
+        if (this.content && !this.marker.visible) {
             this.marker.setVisible(true);
             this.content.close();
+            this.gmaps.element.trigger('marker_close', this);
         }
     }
 };

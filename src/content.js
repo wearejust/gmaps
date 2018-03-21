@@ -34,6 +34,7 @@ module.exports = class Content {
         let pane = $(this.overlay.getPanes().floatPane);
         pane.parent().addClass('gmaps-overlay-pane');
         pane.append(this.overlay.element);
+        this.gmaps.element.trigger('overlay_add', this.overlay);
     }
 
     overlayDraw() {
@@ -43,11 +44,13 @@ module.exports = class Content {
             left: position.x + 'px',
             top: position.y + 'px',
         });
+        this.gmaps.element.trigger('overlay_draw', this.overlay);
     }
 
     overlayRemove() {
         this.overlay.element.detach();
         $('.gmaps-overlay-pane').removeClass('gmaps-overlay-pane');
+        this.gmaps.element.trigger('overlay_remove', this.overlay);
     }
 
     open() {
@@ -56,6 +59,7 @@ module.exports = class Content {
         } else {
             this.infowindow.open(this.gmaps.map);
         }
+        this.gmaps.element.trigger('content_open', this);
     }
 
     close() {
@@ -64,5 +68,6 @@ module.exports = class Content {
         } else {
             this.infowindow.close();
         }
+        this.gmaps.element.trigger('content_close', this);
     }
 };
