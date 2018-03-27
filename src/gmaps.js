@@ -54,7 +54,7 @@ global.GMaps = module.exports = class GMaps {
         this.mapOptions = Object.assign({}, DEFAULT_MAP_OPTIONS, mapOptions || {});
         this.callback = callback;
 
-        if (!window.google) {
+        if (!window.google.maps) { //Check for maps object instead of global google object.
             queue.push(this);
             if (queue.length === 1) {
                 $.getScript(`https://maps.googleapis.com/maps/api/js?v=3&libraries=places&callback=gmaps_load_callback&key=${this.options.apiKey}`);
