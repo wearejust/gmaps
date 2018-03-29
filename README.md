@@ -46,6 +46,7 @@ See **examples** folder for more details
 | infowindow | object | null | Object with custom infowindow options. Use the default key to apply as default. |
 | markers | object | null | Object with keys of custom marker options. Use the default key to apply as default. |
 | search | DOM, string, object | null | Search input field to find places on the map |
+| spread | integer | 0 | Amount to spread markers with the same location |
 
 ### Map Options
 Default Google Maps MapOptions. For more see https://developers.google.com/maps/documentation/javascript/reference#MapOptions

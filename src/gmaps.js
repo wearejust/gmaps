@@ -10,6 +10,7 @@ const DEFAULT_OPTIONS = {
     fitZoom: -1,
     fitZoomMin: 0,
     fitZoomMax: 20,
+    spread: 0,
 };
 
 const DEFAULT_MAP_OPTIONS = {
@@ -101,12 +102,30 @@ global.GMaps = module.exports = class GMaps {
         this.markers = [];
         this.bounds = new google.maps.LatLngBounds();
 
-        let i, marker;
+        let i, marker, key, positions = {};
         for (i=0; i<markers.length; i++) {
             marker = new Marker(this, markers[i]);
             if (!marker.element) continue;
             this.bounds.extend(marker.position);
             this.markers.push(marker);
+
+            if (this.options.spread) {
+                key = `lat${marker.position.lat()}lng${marker.position.lng()}`;
+                if (!positions[key]) positions[key] = [];
+                positions[key].push(marker);
+            }
+        }
+
+        if (this.options.spread) {
+            let p, position;
+            for (p in positions) {
+                position = positions[p];
+                if (position.length > 1) {
+                    for (i=0; i<position.length; i++) {
+                        position[i].offset(i / position.length, this.options.spread);
+                    }
+                }
+            }
         }
 
         this.markers = this.markers.sort((a, b) => {
@@ -120,6 +139,9 @@ global.GMaps = module.exports = class GMaps {
         });
         this.markers.forEach((marker, index) => {
             marker.index = index;
+            marker.marker.setOptions({
+                zIndex: index,
+            });
         });
 
         if (this.options.cluster) {
@@ -145,7 +167,6 @@ global.GMaps = module.exports = class GMaps {
         this.element.on('focusout', this.focus.bind(this));
 
         google.maps.event.addListenerOnce(this.map, 'idle', this.resize);
-
         $window.on('resize', this.resize);
         this.resize();
 

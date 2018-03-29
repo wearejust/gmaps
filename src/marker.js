@@ -8,7 +8,7 @@ module.exports = class Marker {
         if (location) location = location.split(',');
         lat = location ? location[0] : (element.attr('data-gmaps-lat') || element.attr('data-gmaps-latitude'));
         lng = location ? location[1] : (element.attr('data-gmaps-lng') || element.attr('data-gmaps-longitude'));
-        if (!lat || !lng) return;
+        if (isNaN(lat) || isNaN(lng)) return;
 
         this.gmaps = gmaps;
         this.element = element;
@@ -51,6 +51,14 @@ module.exports = class Marker {
                 }
             }
         }
+    }
+
+    offset(alpha, spread) {
+        alpha = alpha * Math.PI * 2;
+        let icon = this.marker.getIcon();
+        if (!icon.anchor) icon.anchor = { x:0, y:0 };
+        icon.anchor.x += Math.sin(alpha) * spread;
+        icon.anchor.y += Math.cos(alpha) * spread;
     }
 
     mouseover() {
