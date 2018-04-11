@@ -95,6 +95,15 @@ module.exports = class Marker {
             this.marker.setVisible(false);
             this.content.open();
             this.gmaps.element.trigger('marker_open', this);
+
+        } else if (this.gmaps.options.markerEmptyZoom) {
+            let z = this.gmaps.options.markerEmptyZoom;
+            if (typeof z == 'string') {
+                z = this.gmaps.map.getZoom() + parseInt(z);
+            }
+
+            this.gmaps.map.setZoom(z);
+            this.gmaps.map.panTo(this.position);
         }
     }
 

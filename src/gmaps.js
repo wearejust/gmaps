@@ -10,13 +10,14 @@ const DEFAULT_OPTIONS = {
     fitZoom: -1,
     fitZoomMin: 0,
     fitZoomMax: 20,
+    markerEmptyZoom: '3',
     spread: 0,
 };
 
 const DEFAULT_MAP_OPTIONS = {
     mapTypeControl: false,
     streetViewControl: false,
-    zoom: 17
+    zoom: 17,
 };
 
 const DEFAULT_CLUSTER_OPTIONS = {

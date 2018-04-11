@@ -45,6 +45,7 @@ See **examples** folder for more details
 | fitZoomMax | integer | 20 | Maximum zoom after `fitZoom` |
 | infowindow | object | null | Object with custom infowindow options. Use the default key to apply as default. |
 | markers | object | null | Object with keys of custom marker options. Use the default key to apply as default. |
+| markerEmptyZoom | integer, string | '3' | Amount to zoom in on clicked empty markers. Use integer for fixed level, string to add/subtract current level.|
 | search | DOM, string, object | null | Search input field to find places on the map |
 | spread | integer | 0 | Amount to spread markers with the same location |
 
