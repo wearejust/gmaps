@@ -69,7 +69,7 @@ global.GMaps = module.exports = class GMaps {
 
     init() {
         let container = this.element.attr('data-gmaps-container');
-        let markers = [this.element];
+        let markers = [this.element.clone()];
         if (this.element.is('ul')) {
             this.element.children('li').each((index, item) => {
                 markers.push($(item));
