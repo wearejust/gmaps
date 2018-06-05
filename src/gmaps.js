@@ -168,7 +168,11 @@ global.GMaps = module.exports = class GMaps {
         this.element.on('focusout', this.focus.bind(this));
 
         google.maps.event.addListenerOnce(this.map, 'idle', this.resize);
-        google.maps.event.addListener(this.map, 'click', this.closeAllMarkers.bind(this));
+        google.maps.event.addListener(this.map, 'click', () => {
+            setTimeout(() => {
+                this.closeAllMarkers();
+            }, 10)
+        });
         $window.on('resize', this.resize);
         this.resize();
 
